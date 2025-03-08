@@ -23,7 +23,7 @@ function log (input) {
     logFile.open("a");
     //alert(now.toTimeString() + ": " + output);
     logFile.writeln(now.toTimeString() + ": " + output);
-    logFile.close();
+    logFile.close(); //作測試修改
 }
 
 function getPageItemByName(name){
@@ -39,6 +39,9 @@ function getPageItemByName(name){
 
 }
 
+/**
+這個測試是新增的行
+**/
 
 
 // 根据名称获取 PathItem 对象的函数
@@ -143,6 +146,7 @@ function getPageItemByNameInLayer(doc, layerName, itemName) {
     } catch (e) {
         log(["未找到名為 '" + layerName + "' 的圖層。"]);
         return null;
+//檔案最後增加一筆資料
     }
 
     // 在目标图层中查找指定名称的 pageItem
