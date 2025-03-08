@@ -1,0 +1,231 @@
+
+				
+				//log(["sortItem newList",newList]);
+				/*
+				for (var i=0;i<sortlist.length;i++){
+					log([i,objectToString(sortlist[i])]);
+				}*/
+				
+				var cBounds = new CenterBounds(activeDocument.geometricBounds);
+				//log(["activeDocument.selection",objectToString[paths]]);
+				//log(["activeDocument.geometricBounds",activeDocument.geometricBounds]);
+				
+				len = -160;
+				
+				oPaths = [];
+				//all pathItems first end point pair parallel curve
+				fepts = [];
+				var offsetPathItems = [];
+				var name = "";
+				for(var n=0,pathItem;n<paths.length;n++){
+					pathItem = paths[n];
+					name = "_curve";
+					var isName = pathItem.name.indexOf("JU");
+					oPaths.push(new Array());
+					pts = paths[n].pathPoints;			
+					if(islinear(pts)){
+						if(isName === -1){
+							name = "_line";
+						}
+						if(pts[0].anchor[0]<pts[1].anchor[0]){
+							f = cBounds.directionality(pts[0].anchor,pts[1].anchor)*len;
+							//log(["a f ",f]);
+						}else{
+							f = cBounds.directionality(pts[1].anchor,pts[0].anchor)*len;
+							//log(["b f ",f]);
+						}
+					}else if(directionality(pts[0]) === -1){
+						f = -len;
+					}else{
+						f = len;
+					}
+					
+					var prex="";
+					if(isName === -1){
+						prex = "JU"+(n+1).toString().padStart(3,'0');
+						pathItem.name = prex+name;
+					}
+					
+					var newPath = activeDocument.pathItems.add();		
+					var newPoint;
+					var oldPoint;
+					
+					for (var i=0,pCurve;i<pts.length-1;i++){
+						newPoint = newPath.pathPoints.add();
+						coords = ptToCoords(pts,i,i+1);
+						//log(["coords",coords]);
+						var curve1 = new Bezier().constructor(coords);
+						
+						//log(["curve1.get(0.5)",curve1.get(0.5)]);			
+						values = curve1.vectors(0,f);
+						//log(["values",values]);
+						//log(["coords",objectToString(coords)]);
+						//log(["vectors",objectToString(values)]);
+						//畫垂直線
+						//app.activeDocument.pathItems.add().setEntirePath( [values[0],values[1]] );
+						//pCurve = parallel_curve.execute(new Array(pts[i].anchor, pts[i].rightDirection, pts[i+1].leftDirection,pts[i+1].anchor),f/2.83464567);
+						pCurve = parallel_curve.execute(p4TolineCoords(new Array(pts[i].anchor, pts[i].rightDirection, pts[i+1].leftDirection,pts[i+1].anchor)),f/2.83464567);
+						oPaths[n].push(pCurve);
+						newPoint.anchor = pCurve[0];
+						if(i === 0){
+							//log(["paths.length",paths.length,"i == 0",i]);
+							newPoint.leftDirection = pCurve[0];
+							jp = new JoinPair().set(pts[i],pCurve);
+							jp.setlinear(islinear(pts));
+							fepts.push(jp);
+						}else{
+							newPoint.leftDirection = oldPCurve[2];							
+						}
+						newPoint.rightDirection = pCurve[1];
+						if(i === pts.length-2){
+							newPoint = newPath.pathPoints.add();
+  							newPoint.anchor = newPoint.rightDirection = pCurve[3];
+  							newPoint.leftDirection = pCurve[2];
+							//log(["pts.length-1",pts.length-1,"i",i]);
+							jp = new JoinPair().set(pts[i+1],pCurve);
+							jp.setlinear(islinear(pts));
+							fepts.push(jp);
+						}
+						oldPoint = newPoint;
+						oldPCurve = pCurve;
+						
+					}
+					if(isName === -1){
+						newPath.name = prex+name+"_offset";
+					}
+					offsetPathItems.push(newPath);
+				 }
+				 
+
+				 for(var i=0;i<newList.length;i++){
+					//log([i,objectToString(newList[i])]);
+					//log([i,newList[i].intersections,"newList.pi1.name",(newList[i].pi1.name),"dir1 isStart",newList[i].dir1,"f1",newList[i].f1,"pi2.name",newList[i].pi2 .name,"dir2 isStart",newList[i].dir2,"f2",newList[i].f2]);
+				}
+				 
+				 for(var i=0;i<oPaths.length;i++){
+					//offsetPathItems.push(drawCurve(oPaths[i]));		
+				 }
+				//var curve1 = new Bezier().constructor(coords1);
+				
+				
+				for (var i=0;i<fepts.length;i++){
+					//log([i,objectToString(fepts[i])]);
+				}
+			
+				tmp = pair(fepts,1);
+				
+				for(var i=0;i<tmp.length;i++){
+					//log(["pair",i,objectToString(tmp[i])]);
+				}
+				
+				//log
+
+				for(var i=0,c1,c2,coords1,coords2,v,q1,q2,pt1,pt2;i<tmp.length;i++){
+					
+					pts1 = tmp[i][0].pt;
+					pts2 = tmp[i][1].pt;
+					//log(["pts1",objectToString(pts1),"pts2",objectToString(pts2)]);
+					//log(["isPtLine(pts1) ",isPtLine(pts1),"isPtLine(pts2)",isPtLine(pts2)]);
+					
+					if(isPtLine(pts1) && isPtLine(pts2)){
+						lli[0] = tmp[i][0].pCurve[0][0];  //x1
+						lli[1] = tmp[i][0].pCurve[0][1];  //y1
+						lli[2] = tmp[i][0].pCurve[3][0];  //x2
+						lli[3] = tmp[i][0].pCurve[3][1];  //y2
+						lli[4] = tmp[i][1].pCurve[0][0];  //x1
+						lli[5] = tmp[i][1].pCurve[0][1];  //y1
+						lli[6] = tmp[i][1].pCurve[3][0];  //x2
+						lli[7] = tmp[i][1].pCurve[3][1];  //y2
+						p = utils.lli8(lli[0],lli[1],lli[2],lli[3],lli[4],lli[5],lli[6],lli[7]);					
+						//d1 = abs(p.x - lli[0]);
+						d1 = abs(p.x - lli[0])+abs(p.y - lli[1]);
+						d2 = abs(p.x - lli[2])+abs(p.y - lli[3]);
+						if(d1<d2){
+//							app.activeDocument.pathItems.add().setEntirePath([[lli[0],lli[1]],[p.x,p.y]]);
+						}else{
+//							app.activeDocument.pathItems.add().setEntirePath([[lli[2],lli[3]],[p.x,p.y]]);
+						}
+						d1 = abs(p.x - lli[4])+abs(p.y - lli[5]);
+						d2 = abs(p.x - lli[6])+abs(p.y - lli[7]);
+						if(d1<d2){
+//							app.activeDocument.pathItems.add().setEntirePath([[lli[4],lli[5]],[p.x,p.y]]);
+						}else{
+//							app.activeDocument.pathItems.add().setEntirePath([[lli[6],lli[7]],[p.x,p.y]]);
+						}
+					}else{
+						//log([i,objectToString(tmp[i])]);
+						coords1 = p4ToCoords(tmp[i][0].pCurve);
+						coords2 = p4ToCoords(tmp[i][1].pCurve);
+						c1 = new Bezier().constructor(coords1);
+						c2 = new Bezier().constructor(coords2);
+						v = c1.intersects(c2,0.0001);
+						if(v.length == 1){
+							tt = v[0].split('/');
+							q1 = c1.hull(tt[0]);
+							q2 = c2.hull(tt[1]);
+						    //log(["c1.hull",q1]);
+						    //log(["c2.hull",q2]);
+//						    reDrawCurve(offsetPathItems,tmp[i][0].pt,q1);
+//						    reDrawCurve(offsetPathItems,tmp[i][1].pt,q2);
+						}
+						if(v.length == 0){
+							//lineJoin(tmp[i],c1,c2);
+							if(isPtLine(pts1) || isPtLine(pts2)){
+								//line to line 交點
+								lli = [];
+								if(isPtLine(pts1)){
+									lli[0] = tmp[i][0].pCurve[0][0];  //x1
+									lli[1] = tmp[i][0].pCurve[0][1];  //y1
+									lli[2] = tmp[i][0].pCurve[3][0];  //x2
+									lli[3] = tmp[i][0].pCurve[3][1];  //y2
+									if(isRight(pts2)){			
+										lli[4] = tmp[i][1].pCurve[2][0];  //x3
+										lli[5] = tmp[i][1].pCurve[2][1];  //y3
+										lli[6] = tmp[i][1].pCurve[3][0];  //x4
+										lli[7] = tmp[i][1].pCurve[3][1];  //y4
+									}else{
+										lli[4] = tmp[i][1].pCurve[0][0];  //x3
+										lli[5] = tmp[i][1].pCurve[0][1];  //y3
+										lli[6] = tmp[i][1].pCurve[1][0];  //x4
+										lli[7] = tmp[i][1].pCurve[1][1];  //y4										
+									}
+								}else{
+									lli[0] = tmp[i][1].pCurve[0][0];  //x1
+									lli[1] = tmp[i][1].pCurve[0][1];  //y1
+									lli[2] = tmp[i][1].pCurve[3][0];  //x2
+									lli[3] = tmp[i][1].pCurve[3][1];  //y2	
+									if(isRight(pts1)){			
+										lli[4] = tmp[i][0].pCurve[2][0];  //x3
+										lli[5] = tmp[i][0].pCurve[2][1];  //y3
+										lli[6] = tmp[i][0].pCurve[3][0];  //x4
+										lli[7] = tmp[i][0].pCurve[3][1];  //y4
+									}else{
+										lli[4] = tmp[i][0].pCurve[0][0];  //x3
+										lli[5] = tmp[i][0].pCurve[0][1];  //y3
+										lli[6] = tmp[i][0].pCurve[1][0];  //x4
+										lli[7] = tmp[i][0].pCurve[1][1];  //y4										
+									}																	
+								}
+								
+								p = utils.lli8(lli[0],lli[1],lli[2],lli[3],lli[4],lli[5],lli[6],lli[7]);
+								
+								//d1 = abs(p.x - lli[0]);
+								d1 = abs(p.x - lli[0])+abs(p.y - lli[1]);
+								d2 = abs(p.x - lli[2])+abs(p.y - lli[3]);
+								if(d1<d2){
+//									app.activeDocument.pathItems.add().setEntirePath([[lli[0],lli[1]],[p.x,p.y]]);
+								}else{
+//									app.activeDocument.pathItems.add().setEntirePath([[lli[2],lli[3]],[p.x,p.y]]);
+								}
+//								app.activeDocument.pathItems.add().setEntirePath([[lli[4],lli[5]],[p.x,p.y]]);
+								
+		
+							}else{
+//								lineJoin(tmp[i],c1,c2);
+							}
+						}						
+					}	
+					
+					
+					
+				}	

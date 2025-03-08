@@ -1,0 +1,135 @@
+
+"pageItem","closed:'true'\n
+area:'1564006.740686'\n
+length:'5397.23293445474'\n
+guides:'false'\n
+filled:'false'\n
+fillColor : { typename:'NoColor'\n} ,
+fillOverprint:'false'\n
+stroked:'true'\n
+strokeColor : { red:'255'\ngreen:'0'\nblue:'0'\ntypename:'RGBColor'\n} ,
+strokeOverprint:'false'\n
+strokeWidth:'0'\n
+strokeDashes : [ ],
+strokeDashOffset:'0'\n
+strokeCap : { } ,
+strokeJoin : { } ,
+strokeMiterLimit:'10'\n
+clipping:'false'\n
+evenodd:'false'\n
+resolution:'800'\n
+
+selectedPathPoints : [ 
+
+
+{anchor : [ '1158.00198446684','982.312000140328'],leftDirection : [ '1158.00198446684','982.312000140328'],rightDirection : [ '1158.00198446684','982.312000140328'],pointType : { } ,selected : { } ,typename:'PathPoint'\n}
+{anchor : [ '1175.78598447129','922.408000125351'],leftDirection : [ '1175.78598447129','922.408000125351'],rightDirection : [ '1175.78598447129','922.408000125351'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1185.79398447379','892.888000117971'],leftDirection : [ '1185.79398447379','892.888000117971'],rightDirection : [ '1185.79398447379','892.888000117971'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1196.88198447656','863.800000110699'],leftDirection : [ '1196.88198447656','863.800000110699'],rightDirection : [ '1196.88198447656','863.800000110699'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1210.05798447986','836.224000103806'],leftDirection : [ '1210.05798447986','836.224000103806'],rightDirection : [ '1210.05798447986','836.224000103806'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1217.54598448173','822.904000100476'],leftDirection : [ '1217.54598448173','822.904000100476'],rightDirection : [ '1217.54598448173','822.904000100476'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1225.8259844838','810.088000097272'],leftDirection : [ '1225.8259844838','810.088000097272'],rightDirection : [ '1225.8259844838','810.088000097272'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1245.55398448873','786.832000091458'],leftDirection : [ '1245.55398448873','786.832000091458'],rightDirection : [ '1245.55398448873','786.832000091458'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1266.57798449399','764.656000085914'],leftDirection : [ '1266.57798449399','764.656000085914'],rightDirection : [ '1266.57798449399','764.656000085914'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1266.57798449399','-522.776000235945'],leftDirection : [ '1266.57798449399','-522.776000235945'],rightDirection : [ '1266.57798449399','-522.776000235945'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1196.59398447649','-526.16000023679'],leftDirection : [ '1196.59398447649','-526.16000023679'],rightDirection : [ '1196.59398447649','-526.16000023679'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1161.67398446776','-528.68000023742'],leftDirection : [ '1161.67398446776','-528.68000023742'],rightDirection : [ '1161.67398446776','-528.68000023742'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1126.89798445907','-532.712000238427'],leftDirection : [ '1126.89798445907','-532.712000238427'],rightDirection : [ '1126.89798445907','-532.712000238427'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1083.98598444834','-541.856000240714'],leftDirection : [ '1083.98598444834','-541.856000240714'],rightDirection : [ '1083.98598444834','-541.856000240714'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1041.4339844377','-552.944000243486'],leftDirection : [ '1041.4339844377','-552.944000243486'],rightDirection : [ '1041.4339844377','-552.944000243486'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '956.905984416569','-577.424000249606'],leftDirection : [ '956.905984416569','-577.424000249606'],rightDirection : [ '956.905984416569','-577.424000249606'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '909.673984404762','-591.248000253061'],leftDirection : [ '909.673984404762','-591.248000253061'],rightDirection : [ '909.673984404762','-591.248000253061'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '862.153984392882','-603.92000025623'],leftDirection : [ '862.153984392882','-603.92000025623'],rightDirection : [ '862.153984392882','-603.92000025623'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '809.017984379598','-613.856000258715'],leftDirection : [ '809.017984379598','-613.856000258715'],rightDirection : [ '809.017984379598','-613.856000258715'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '755.449984366205','-621.128000260531'],leftDirection : [ '755.449984366205','-621.128000260531'],rightDirection : [ '755.449984366205','-621.128000260531'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '708.937984354578','-624.944000261487'],leftDirection : [ '708.937984354578','-624.944000261487'],rightDirection : [ '708.937984354578','-624.944000261487'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '662.42598434295','-627.392000262098'],leftDirection : [ '662.42598434295','-627.392000262098'],rightDirection : [ '662.42598434295','-627.392000262098'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '604.177984328388','-629.912000262728'],leftDirection : [ '604.177984328388','-629.912000262728'],rightDirection : [ '604.177984328388','-629.912000262728'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '430.729984285026','-629.912000262728'],leftDirection : [ '430.729984285026','-629.912000262728'],rightDirection : [ '430.729984285026','-629.912000262728'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '430.729984285026','1222.93600020048'],leftDirection : [ '430.729984285026','1222.93600020048'],rightDirection : [ '430.729984285026','1222.93600020048'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '433.393984285693','1239.64000020466'],leftDirection : [ '433.393984285693','1239.64000020466'],rightDirection : [ '433.393984285693','1239.64000020466'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '436.561984286483','1247.48800020662'],leftDirection : [ '436.561984286483','1247.48800020662'],rightDirection : [ '436.561984286483','1247.48800020662'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '440.953984287582','1254.76000020844'],leftDirection : [ '440.953984287582','1254.76000020844'],rightDirection : [ '440.953984287582','1254.76000020844'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '446.42598428895','1261.16800021004'],leftDirection : [ '446.42598428895','1261.16800021004'],rightDirection : [ '446.42598428895','1261.16800021004'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '452.833984290552','1266.78400021145'],leftDirection : [ '452.833984290552','1266.78400021145'],rightDirection : [ '452.833984290552','1266.78400021145'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '460.105984292371','1271.10400021253'],leftDirection : [ '460.105984292371','1271.10400021253'],rightDirection : [ '460.105984292371','1271.10400021253'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '467.809984294296','1274.56000021339'],leftDirection : [ '467.809984294296','1274.56000021339'],rightDirection : [ '467.809984294296','1274.56000021339'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '474.505984295971','1276.79200021395'],leftDirection : [ '474.505984295971','1276.79200021395'],rightDirection : [ '474.505984295971','1276.79200021395'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '501.649984302756','1285.50400021613'],leftDirection : [ '501.649984302756','1285.50400021613'],rightDirection : [ '501.649984302756','1285.50400021613'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '528.361984309433','1295.22400021856'],leftDirection : [ '528.361984309433','1295.22400021856'],rightDirection : [ '528.361984309433','1295.22400021856'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '552.193984315392','1306.67200022142'],leftDirection : [ '552.193984315392','1306.67200022142'],rightDirection : [ '552.193984315392','1306.67200022142'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '575.017984321097','1320.06400022477'],leftDirection : [ '575.017984321097','1320.06400022477'],rightDirection : [ '575.017984321097','1320.06400022477'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '595.393984326192','1334.75200022844'],leftDirection : [ '595.393984326192','1334.75200022844'],rightDirection : [ '595.393984326192','1334.75200022844'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '614.329984330927','1351.24000023256'],leftDirection : [ '614.329984330927','1351.24000023256'],rightDirection : [ '614.329984330927','1351.24000023256'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '631.177984335138','1369.24000023706'],leftDirection : [ '631.177984335138','1369.24000023706'],rightDirection : [ '631.177984335138','1369.24000023706'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '646.2259843389','1388.68000024192'],leftDirection : [ '646.2259843389','1388.68000024192'],rightDirection : [ '646.2259843389','1388.68000024192'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '659.54598434223','1409.99200024725'],leftDirection : [ '659.54598434223','1409.99200024725'],rightDirection : [ '659.54598434223','1409.99200024725'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '670.849984345055','1432.45600025286'],leftDirection : [ '670.849984345055','1432.45600025286'],rightDirection : [ '670.849984345055','1432.45600025286'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '680.281984347414','1457.08000025902'],leftDirection : [ '680.281984347414','1457.08000025902'],rightDirection : [ '680.281984347414','1457.08000025902'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '687.98598434934','1482.35200026534'],leftDirection : [ '687.98598434934','1482.35200026534'],rightDirection : [ '687.98598434934','1482.35200026534'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '693.385984350691','1508.2000002718'],leftDirection : [ '693.385984350691','1508.2000002718'],rightDirection : [ '693.385984350691','1508.2000002718'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '934.801984411044','1385.44000024111'],leftDirection : [ '934.801984411044','1385.44000024111'],rightDirection : [ '934.801984411044','1385.44000024111'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '957.481984416714','1372.76800023794'],leftDirection : [ '957.481984416714','1372.76800023794'],rightDirection : [ '957.481984416714','1372.76800023794'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '979.58598442224','1359.23200023456'],leftDirection : [ '979.58598442224','1359.23200023456'],rightDirection : [ '979.58598442224','1359.23200023456'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '996.289984426416','1346.05600023126'],leftDirection : [ '996.289984426416','1346.05600023126'],rightDirection : [ '996.289984426416','1346.05600023126'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1011.98598443034','1331.72800022768'],leftDirection : [ '1011.98598443034','1331.72800022768'],rightDirection : [ '1011.98598443034','1331.72800022768'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1026.74598443403','1316.39200022385'],leftDirection : [ '1026.74598443403','1316.39200022385'],rightDirection : [ '1026.74598443403','1316.39200022385'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1040.49798443747','1300.12000021978'],leftDirection : [ '1040.49798443747','1300.12000021978'],rightDirection : [ '1040.49798443747','1300.12000021978'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1053.0259844406','1282.91200021548'],leftDirection : [ '1053.0259844406','1282.91200021548'],rightDirection : [ '1053.0259844406','1282.91200021548'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1064.47398444346','1264.984000211'],leftDirection : [ '1064.47398444346','1264.984000211'],rightDirection : [ '1064.47398444346','1264.984000211'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1074.55398444598','1246.26400020632'],leftDirection : [ '1074.55398444598','1246.26400020632'],rightDirection : [ '1074.55398444598','1246.26400020632'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1083.55398444823','1226.96800020149'],leftDirection : [ '1083.55398444823','1226.96800020149'],rightDirection : [ '1083.55398444823','1226.96800020149'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1100.18598445239','1185.92800019123'],leftDirection : [ '1100.18598445239','1185.92800019123'],rightDirection : [ '1100.18598445239','1185.92800019123'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1114.72998445603','1144.09600018077'],leftDirection : [ '1114.72998445603','1144.09600018077'],rightDirection : [ '1114.72998445603','1144.09600018077'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1131.36198446019','1085.34400016609'],leftDirection : [ '1131.36198446019','1085.34400016609'],rightDirection : [ '1131.36198446019','1085.34400016609'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1145.76198446378','1029.11200015203'],leftDirection : [ '1145.76198446378','1029.11200015203'],rightDirection : [ '1145.76198446378','1029.11200015203'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}
+{anchor : [ '1147.27398446416','1023.20800015055'],leftDirection : [ '1147.27398446416','1023.20800015055'],rightDirection : [ '1147.27398446416','1023.20800015055'],pointType : { } ,selected : { } ,typename:'PathPoint'\n,}],
+polarity : { } ,
+typename:'PathItem'\n
+uRL:''\nnote:''\n
+layer : { visible:'true'\n
+locked:'false'\n
+printable:'true'\n
+hasSelectedArtwork:'false'\n
+preview:'true'\n
+dimPlacedImages:'false'\n
+color : { red:'255'\ngreen:'255'\nblue:'78.6926070038911'\ntypename:'RGBColor'\n} ,
+name:'縫份'\n
+opacity:'100'\n
+zOrderPosition:'7'\n
+absoluteZOrderPosition:'171'\n
+sliced:'false'\n
+blendingMode : { } ,
+isIsolated:'false'\n
+artworkKnockout : { } ,
+typename:'Layer'\n
+pageItems : { } ,} ,
+locked:'false'\n
+hidden:'false'\n
+selected:'true'\n
+position : [ '430.729984285026','1508.2000002718'],
+width:'835.848000208962'\n
+height:'2138.11200053453'\n
+geometricBounds : [ '430.729984285026','1508.2000002718''1266.57798449399''-629.912000262728'],
+visibleBounds : [ '430.729984285026','1508.2000002718''1266.57798449399''-629.912000262728'],
+controlBounds : [ '430.729984285026','1508.2000002718''1266.57798449399''-629.912000262728'],
+
+1267.578
+
+630.0222 pt
+
+
+name:''\n
+uuid:'266'\n
+blendingMode : { } ,
+opacity:'100'\n
+isIsolated:'false'\n
+artworkKnockout : { } ,z
+OrderPosition:'1'\n
+absoluteZOrderPosition:'169'\n
+editable:'true'\n
+sliced:'false'\n
+top:'1508.2000002718'\n
+left:'430.729984285026'\n
+pixelAligned:'false'\n
+wrapped:'false'\n"]
