@@ -23,7 +23,7 @@ function log (input) {
     logFile.open("a");
     //alert(now.toTimeString() + ": " + output);
     logFile.writeln(now.toTimeString() + ": " + output);
-    logFile.close(); //作測試修改
+    logFile.close(); //作測試修改222
 }
 
 function getPageItemByName(name){
