@@ -1,6 +1,6 @@
 /**
  * 判斷當前目錄下是否存在名為 'clothes.csv' 的檔案
- * 
+ *
  * @returns {File} - 如果找到 'clothes.csv' 則返回檔案物件，否則返回 null
  */
 function checkForDataCsv() {
@@ -203,7 +203,7 @@ function showGui(filePath,selectedSizes,configObject) {
             alert("請至少選擇一個尺寸。");
             return;
         }
-        
+
         if("" === filePathText.text.trim()){
 			alert("請選擇套版檔案。");
 			return;
@@ -222,5 +222,3 @@ function showGui(filePath,selectedSizes,configObject) {
     dialog.layout.layout(true);
     dialog.show();
 }
-
-

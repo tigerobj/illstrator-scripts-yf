@@ -480,7 +480,7 @@ if(isOk){
     isMaskCover = vData[slectValue].leftSleeveUpperCollarCover  == 'Y';
     createMask("左袖",isMaskCover,true);
     //後片要先執
-    isMaskCover = vData[slectValue].rightFrontPlacketCover == 'Y';    
+    isMaskCover = vData[slectValue].rightFrontPlacketCover == 'Y';
     createMaskPlacketCover("右前",isMaskCover,false);
     isMaskCover = vData[slectValue].leftFrontPlacketCover == 'Y';
     createMaskPlacketCover("左前",isMaskCover,false);
