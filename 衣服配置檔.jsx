@@ -97,7 +97,10 @@ function upsertMultipleToCsvFile(csvFile, dataArray) {
 
 function copyAndOpenAiFile(sourcePath, destinationPath) {
 	// 創建目標文件對象
-    var destinationFile = new File(destinationPath);
+
+  var destinationFile = new File(destinationPath);
+
+	alert(destinationFile);
 	if(destinationFile.exists){
 		alert("檔案已經存在,沒有從樣版中複製,打開己存在的檔案");
 		app.open(destinationFile,DocumentColorSpace.CMYK);
@@ -152,12 +155,14 @@ function getKeys(obj) {
 function showGui(evnFile) {
     var checkboxIndex = -1;
     var file = evnFile;
+		alert(evnFile);
     var clothesData = {};
     // 打開檔案進行讀取
     if (file.open('r')) {
         file.readln(); // 讀取並忽略首行（標題行）
         while (!file.eof) {
             var line = file.readln();
+						alert(line);
             var parts = line.split(';');
             var type = parts[0].trim();
             var size = parts[1].trim();
@@ -346,7 +351,7 @@ extension = getFileExtension(selectedData.fileName);
 
 if(extension == null){
     alert("沒有附檔名請確定 衣服配置檔.csv 內的 空白樣版 欄位");
-    exit();
+		throw new Error("沒有附檔名請確定 衣服配置檔.csv 內的 空白樣版 欄位");
 }
 
 fileName = selectedData.selectedSize+"-"+selectedData.number+"-"+selectedData.name+"."+extension;
@@ -380,6 +385,12 @@ if(! csvFile.exists){
 		["左袖對齊", "置中"],
 		["右袖對齊", "置中"],
 		["套版", selectedData.selectedSize+"-套版.eps"]
+	];
+	upsertMultipleToCsvFile(csvFile,newEntries);
+}else{
+	var newEntries = [
+		["姓名", selectedData.name],
+		["號碼", selectedData.number]
 	];
 	upsertMultipleToCsvFile(csvFile,newEntries);
 }
