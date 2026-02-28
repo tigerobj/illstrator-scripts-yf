@@ -16,101 +16,212 @@
         return;
     }
 
-    var batchCount = 20; // 固定執行 20 次
+    // 固定圖案群組數量 = 1
+    var motifCount = 1;
 
+    var uiResult = showConfigDialog();
+    if (!uiResult) {
+        return;
+    }
+
+    var params = uiResult;
     var sourceBounds = source.visibleBounds;
     var white = createWhiteColor(doc);
     var layer = doc.activeLayer;
-    var compounds = [];
     var shapeStore = loadShapeStore();
     var recordFile = getRecordFile();
 
-    for (var run = 0; run < batchCount; run++) {
-        var generated = layer.groupItems.add();
-        generated.name = "數學方程式白色X圖_" + timeStamp() + "_" + (run + 1);
+    var generated = layer.groupItems.add();
+    generated.name = "數學方程式白色X圖_" + timeStamp();
 
-        // 每次都隨機一組參數（不顯示輸入框），且避免與記錄檔中已出現的形狀重複
-        var spacingFactor;
-        var spreadFactor;
-        var jitter;
-        var radius;
-        var eqType;
-        var occupied;
-        var shapeKey;
-        var foundUnique = false;
+    var foundUnique = false;
+    var occupied = [];
+    var shapeKey = "";
+    var eqType = 0;
+    var radius = 0;
 
-        for (var attempt = 0; attempt < 80; attempt++) {
-            var minCell = randomInt(1, 3);
-            var maxCell = randomInt(Math.max(2, minCell + 1), 6);
-            spacingFactor = randomRange(1.35, 1.9);
-            spreadFactor = randomRange(4.0, 7.2);
-            jitter = randomRange(0.0, 0.03);
+    for (var attempt = 0; attempt < 100; attempt++) {
+        radius = randomInt(params.minCell, params.maxCell);
+        eqType = randomInt(0, 6);
 
-            radius = randomInt(minCell, maxCell);
-            eqType = randomInt(0, 6);
-            occupied = equationCells(eqType, radius);
-            occupied = removeIsolatedCells(occupied, 1);
-            occupied = closeGaps(occupied, radius + 1, 5);
-            occupied = removeIsolatedCells(occupied, 1);
-            occupied = clampCellsInRadius(occupied, radius + 1);
+        occupied = equationCells(eqType, radius);
+        occupied = removeIsolatedCells(occupied, 1);
+        occupied = closeGaps(occupied, radius + 1, 5);
+        occupied = removeIsolatedCells(occupied, 1);
+        occupied = clampCellsInRadius(occupied, radius + 1);
 
-            shapeKey = buildShapeKey(eqType, radius, occupied);
-            if (!shapeStore[shapeKey]) {
-                shapeStore[shapeKey] = true;
-                appendShapeKey(recordFile, shapeKey);
-                foundUnique = true;
-                break;
-            }
-        }
-
-        if (!foundUnique) {
-            continue;
-        }
-
-        var sourceW = Math.max(1, sourceBounds[2] - sourceBounds[0]);
-        var sourceH = Math.max(1, sourceBounds[1] - sourceBounds[3]);
-        var stepX = sourceW * spacingFactor;
-        var stepY = sourceH * spacingFactor;
-
-        var centers = generateCenters(1, sourceBounds, stepX * spreadFactor, stepY * spreadFactor);
-
-        for (var k = 0; k < occupied.length; k++) {
-            var cell = occupied[k];
-            var cx = centers[0][0] + cell[0] * stepX + randomRange(-stepX * jitter, stepX * jitter);
-            var cy = centers[0][1] + cell[1] * stepY + randomRange(-stepY * jitter, stepY * jitter);
-
-            var dup = source.duplicate(generated, ElementPlacement.PLACEATEND);
-            recolorToWhite(dup, white);
-            placeItemCenter(dup, cx, cy);
-        }
-
-        var pathList = [];
-        collectPathItems(generated, pathList);
-        if (pathList.length >= 2) {
-            var compound = layer.compoundPathItems.add();
-            compound.name = generated.name + "_複合路徑";
-            for (var p = pathList.length - 1; p >= 0; p--) {
-                pathList[p].move(compound, ElementPlacement.PLACEATBEGINNING);
-            }
-            compounds.push(compound);
-        }
-
-        try {
-            generated.remove();
-        } catch (e) {
+        shapeKey = buildShapeKey(eqType, radius, occupied);
+        if (!shapeStore[shapeKey]) {
+            shapeStore[shapeKey] = true;
+            appendShapeKey(recordFile, shapeKey);
+            foundUnique = true;
+            break;
         }
     }
 
-    if (compounds.length === 0) {
+    if (!foundUnique) {
+        try { generated.remove(); } catch (e0) {}
+        alert("找不到新的不重複形狀（已比對記錄檔）。\n請調整參數後再試。");
+        return;
+    }
+
+    var sourceW = Math.max(1, sourceBounds[2] - sourceBounds[0]);
+    var sourceH = Math.max(1, sourceBounds[1] - sourceBounds[3]);
+    var stepX = sourceW * params.spacingFactor;
+    var stepY = sourceH * params.spacingFactor;
+    var centers = generateCenters(motifCount, sourceBounds, stepX * params.spreadFactor, stepY * params.spreadFactor);
+
+    for (var k = 0; k < occupied.length; k++) {
+        var cell = occupied[k];
+        var cx = centers[0][0] + cell[0] * stepX + randomRange(-stepX * params.jitter, stepX * params.jitter);
+        var cy = centers[0][1] + cell[1] * stepY + randomRange(-stepY * params.jitter, stepY * params.jitter);
+
+        var dup = source.duplicate(generated, ElementPlacement.PLACEATEND);
+        recolorToWhite(dup, white);
+        placeItemCenter(dup, cx, cy);
+    }
+
+    var pathList = [];
+    collectPathItems(generated, pathList);
+    if (pathList.length < 2) {
+        try { generated.remove(); } catch (e1) {}
         alert("生成路徑不足，無法建立複合路徑。");
         return;
     }
 
-    doc.selection = null;
-    for (var c = 0; c < compounds.length; c++) {
-        compounds[c].selected = true;
+    var compound = layer.compoundPathItems.add();
+    compound.name = generated.name + "_複合路徑";
+    for (var p = pathList.length - 1; p >= 0; p--) {
+        pathList[p].move(compound, ElementPlacement.PLACEATBEGINNING);
     }
-    alert("完成：已自動執行 20 次，每次輸出 1 個複合路徑。\n實際產生：" + compounds.length + " 個物件。\n形狀記錄檔：" + recordFile.fsName);
+
+    try { generated.remove(); } catch (e2) {}
+
+    doc.selection = null;
+    compound.selected = true;
+    alert("完成：已產生 1 個複合路徑。\n形狀記錄檔：" + recordFile.fsName);
+
+    function showConfigDialog() {
+        var w = new Window("dialog", "白色X圖樣參數設定");
+        w.orientation = "column";
+        w.alignChildren = "fill";
+
+        var panel = w.add("panel", undefined, "參數（固定群組數量 = 1）");
+        panel.orientation = "column";
+        panel.alignChildren = "fill";
+
+        var controls = {};
+
+        controls.minCell = addSliderField(panel, "每個圖案最小半徑（格數）", 1, 12, 2, 1);
+        controls.maxCell = addSliderField(panel, "每個圖案最大半徑（格數）", 2, 20, 6, 1);
+        controls.spacingFactor = addSliderField(panel, "X 間距倍率", 0.8, 3.0, 1.55, 0.01);
+        controls.spreadFactor = addSliderField(panel, "圖案中心分散倍率", 1.0, 10.0, 4.8, 0.01);
+        controls.jitter = addSliderField(panel, "抖動比例", 0.0, 0.3, 0.02, 0.001);
+
+        var btnRow = w.add("group");
+        btnRow.alignment = "right";
+        var cancelBtn = btnRow.add("button", undefined, "取消");
+        var okBtn = btnRow.add("button", undefined, "產生圖形", {name: "ok"});
+
+        cancelBtn.onClick = function () { w.close(0); };
+
+        okBtn.onClick = function () {
+            var v = {
+                minCell: parseFloat(controls.minCell.input.text),
+                maxCell: parseFloat(controls.maxCell.input.text),
+                spacingFactor: parseFloat(controls.spacingFactor.input.text),
+                spreadFactor: parseFloat(controls.spreadFactor.input.text),
+                jitter: parseFloat(controls.jitter.input.text)
+            };
+
+            if (!isFinite(v.minCell) || !isFinite(v.maxCell) || !isFinite(v.spacingFactor) || !isFinite(v.spreadFactor) || !isFinite(v.jitter)) {
+                alert("請輸入有效數字。");
+                return;
+            }
+
+            if (v.minCell < 1 || v.minCell > 12) {
+                alert("最小半徑需在 1 ~ 12。");
+                return;
+            }
+            if (v.maxCell < 2 || v.maxCell > 20) {
+                alert("最大半徑需在 2 ~ 20。");
+                return;
+            }
+            if (v.maxCell < v.minCell) {
+                alert("最大半徑不可小於最小半徑。");
+                return;
+            }
+            if (v.spacingFactor < 0.8 || v.spacingFactor > 3.0) {
+                alert("X 間距倍率需在 0.8 ~ 3.0。");
+                return;
+            }
+            if (v.spreadFactor < 1.0 || v.spreadFactor > 10.0) {
+                alert("圖案中心分散倍率需在 1.0 ~ 10.0。");
+                return;
+            }
+            if (v.jitter < 0.0 || v.jitter > 0.3) {
+                alert("抖動比例需在 0.0 ~ 0.3。");
+                return;
+            }
+
+            v.minCell = Math.round(v.minCell);
+            v.maxCell = Math.round(v.maxCell);
+
+            w.result = v;
+            w.close(1);
+        };
+
+        var code = w.show();
+        if (code !== 1) {
+            return null;
+        }
+        return w.result;
+    }
+
+    function addSliderField(parent, label, min, max, value, step) {
+        var group = parent.add("group");
+        group.orientation = "column";
+        group.alignChildren = "fill";
+
+        group.add("statictext", undefined, label);
+
+        var row = group.add("group");
+        row.orientation = "row";
+        row.alignChildren = ["fill", "center"];
+
+        var slider = row.add("slider", undefined, value, min, max);
+        slider.preferredSize.width = 220;
+
+        var input = row.add("edittext", undefined, formatNumber(value, step));
+        input.characters = 8;
+
+        slider.onChanging = function () {
+            input.text = formatNumber(slider.value, step);
+        };
+
+        input.onChange = function () {
+            var v = parseFloat(input.text);
+            if (!isFinite(v)) {
+                input.text = formatNumber(slider.value, step);
+                return;
+            }
+            if (v < min) v = min;
+            if (v > max) v = max;
+            slider.value = v;
+            input.text = formatNumber(v, step);
+        };
+
+        return { slider: slider, input: input };
+    }
+
+    function formatNumber(value, step) {
+        if (step >= 1) {
+            return String(Math.round(value));
+        }
+        var s = (Math.round(value / step) * step).toFixed(3);
+        s = s.replace(/0+$/, "").replace(/\.$/, "");
+        return s;
+    }
 
     function findFirstDrawable(selection) {
         for (var i = 0; i < selection.length; i++) {
