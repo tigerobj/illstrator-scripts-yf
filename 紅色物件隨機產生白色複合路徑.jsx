@@ -31,7 +31,7 @@
     var spreadFactor = askFloat("圖案中心分散倍率（建議 4.0 ~ 8.0）", 4.8, 1.0, 20.0);
     if (spreadFactor === null) return;
 
-    var jitter = askFloat("每個 X 的抖動比例（0~0.4）", 0.05, 0, 0.4);
+    var jitter = askFloat("每個 X 的抖動比例（0~0.4）", 0.02, 0, 0.4);
     if (jitter === null) return;
 
     var sourceBounds = source.visibleBounds;
@@ -51,7 +51,8 @@
         var radius = randomInt(minCell, maxCell);
         var eqType = randomInt(0, 6);
         var occupied = equationCells(eqType, radius);
-        occupied = thinCells(occupied, randomRange(0.74, 0.92));
+        occupied = removeIsolatedCells(occupied, 1);
+        occupied = closeGaps(occupied, radius + 1, 5);
         occupied = removeIsolatedCells(occupied, 1);
         occupied = clampCellsInRadius(occupied, radius + 1);
 
@@ -177,14 +178,39 @@
         return cells;
     }
 
-    function thinCells(cells, keepRatio) {
-        var out = [];
-        for (var i = 0; i < cells.length; i++) {
-            if (Math.random() <= keepRatio) {
-                out.push(cells[i]);
+    function closeGaps(cells, maxRadius, minNeighborsToFill) {
+        var map = {};
+        var i;
+        for (i = 0; i < cells.length; i++) {
+            map[cells[i][0] + "," + cells[i][1]] = true;
+        }
+
+        var r = Math.ceil(maxRadius);
+        var added = [];
+        var r2 = maxRadius * maxRadius;
+
+        for (var y = -r; y <= r; y++) {
+            for (var x = -r; x <= r; x++) {
+                var key = x + "," + y;
+                if (map[key]) continue;
+                if (x * x + y * y > r2) continue;
+
+                var n = 0;
+                for (var dx = -1; dx <= 1; dx++) {
+                    for (var dy = -1; dy <= 1; dy++) {
+                        if (dx === 0 && dy === 0) continue;
+                        if (map[(x + dx) + "," + (y + dy)]) n++;
+                    }
+                }
+
+                if (n >= minNeighborsToFill) {
+                    added.push([x, y]);
+                    map[key] = true;
+                }
             }
         }
-        return out;
+
+        return cells.concat(added);
     }
 
     function removeIsolatedCells(cells, minNeighbors) {
