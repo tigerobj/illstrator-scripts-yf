@@ -1,2 +1,2 @@
 #include "對齊置中.jsx";
-center("縫份","右袖");
+centerBySeletItem("縫份","右袖");
