@@ -33,11 +33,11 @@
         return;
     }
 
-    var scaleMinInput = prompt("最小縮放百分比（%）", "60");
+    var scaleMinInput = prompt("最小縮放百分比（%）", "85");
     if (scaleMinInput === null) {
         return;
     }
-    var scaleMaxInput = prompt("最大縮放百分比（%）", "140");
+    var scaleMaxInput = prompt("最大縮放百分比（%）", "120");
     if (scaleMaxInput === null) {
         return;
     }
@@ -56,11 +56,33 @@
         return;
     }
 
+    var spacingInput = prompt("排列間距倍率（建議 2.0 ~ 4.0，數字越大越分散）", "2.8");
+    if (spacingInput === null) {
+        return;
+    }
+    var spacingFactor = parseFloat(spacingInput);
+    if (isNaN(spacingFactor) || spacingFactor < 1.2) {
+        alert("排列間距倍率需 >= 1.2");
+        return;
+    }
+
+    var jitterInput = prompt("排列抖動百分比（0~40，越小越整齊）", "12");
+    if (jitterInput === null) {
+        return;
+    }
+    var jitterPercent = parseFloat(jitterInput);
+    if (isNaN(jitterPercent) || jitterPercent < 0 || jitterPercent > 40) {
+        alert("排列抖動百分比需在 0~40 之間");
+        return;
+    }
+
     var targetLayer = doc.activeLayer;
     var generatedGroup = targetLayer.groupItems.add();
     generatedGroup.name = "隨機白色圖形_" + timeStamp();
 
     var whiteColor = createWhiteColor(doc);
+
+    var layout = buildOrderedLayout(referenceBounds, generateCount, spacingFactor, jitterPercent);
 
     for (var n = 0; n < generateCount; n++) {
         var src = sourceItems[randomInt(0, sourceItems.length - 1)];
@@ -69,11 +91,12 @@
         var scale = randomRange(minScale, maxScale);
         dup.resize(scale, scale, true, true, true, true, scale, Transformation.CENTER);
 
-        dup.rotate(randomRange(0, 360), true, true, true, true, Transformation.CENTER);
+        var angle = randomInt(0, 7) * 45 + randomRange(-8, 8);
+        dup.rotate(angle, true, true, true, true, Transformation.CENTER);
 
         recolorToWhite(dup, whiteColor);
 
-        randomPlaceInBounds(dup, referenceBounds);
+        placeAtCenter(dup, layout[n][0], layout[n][1]);
     }
 
     var pathList = [];
@@ -191,30 +214,56 @@
         return bounds;
     }
 
-    function randomPlaceInBounds(item, areaBounds) {
+    function buildOrderedLayout(sourceBounds, count, spacingFactor, jitterPercent) {
+        var cx = (sourceBounds[0] + sourceBounds[2]) / 2;
+        var cy = (sourceBounds[1] + sourceBounds[3]) / 2;
+        var sw = Math.max(1, sourceBounds[2] - sourceBounds[0]);
+        var sh = Math.max(1, sourceBounds[1] - sourceBounds[3]);
+
+        var cellW = sw * spacingFactor;
+        var cellH = sh * spacingFactor;
+
+        var cols = Math.ceil(Math.sqrt(count));
+        var rows = Math.ceil(count / cols);
+
+        var startX = cx - ((cols - 1) * cellW) / 2;
+        var startY = cy + ((rows - 1) * cellH) / 2;
+
+        var jitterX = cellW * (jitterPercent / 100);
+        var jitterY = cellH * (jitterPercent / 100);
+
+        var indices = [];
+        for (var i = 0; i < rows * cols; i++) {
+            indices.push(i);
+        }
+        shuffle(indices);
+
+        var points = [];
+        for (var n = 0; n < count; n++) {
+            var idx = indices[n];
+            var r = Math.floor(idx / cols);
+            var c = idx % cols;
+            var px = startX + c * cellW + randomRange(-jitterX, jitterX);
+            var py = startY - r * cellH + randomRange(-jitterY, jitterY);
+            points.push([px, py]);
+        }
+        return points;
+    }
+
+    function placeAtCenter(item, centerX, centerY) {
         var b = item.visibleBounds;
         var w = b[2] - b[0];
         var h = b[1] - b[3];
+        item.position = [centerX - w / 2, centerY + h / 2];
+    }
 
-        var areaW = areaBounds[2] - areaBounds[0];
-        var areaH = areaBounds[1] - areaBounds[3];
-
-        var left;
-        var top;
-
-        if (areaW <= w) {
-            left = areaBounds[0];
-        } else {
-            left = areaBounds[0] + randomRange(0, areaW - w);
+    function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
-
-        if (areaH <= h) {
-            top = areaBounds[1];
-        } else {
-            top = areaBounds[1] - randomRange(0, areaH - h);
-        }
-
-        item.position = [left, top];
     }
 
     function randomRange(min, max) {
