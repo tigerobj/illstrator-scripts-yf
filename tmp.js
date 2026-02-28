@@ -1,89 +1,52 @@
-var doc = app.activeDocument;
+#include "對齊置中.jsx";
+
+//對齊置中
+//autoCenterBySelectName("裁切","領","底色");
+
+//bottomCenterXY("裁切","右袖","底色");
 
 
-/**
- * 在指定圖層中根據名稱獲取頁面物件，包括群組和遮罩內的物件。
- *
- * @param {Document} doc - Adobe Illustrator 文件對象。
- * @param {string} layerName - 圖層的名稱。
- * @param {string} itemName - 頁面物件的名稱。
- * @returns {PageItem|null} - 返回對應的頁面物件，如果未找到則返回 null。
- */
-function getPageItemByNameInLayer(doc, layerName, itemName) {
-    // 获取指定名称的图层
-    var targetLayer;
-    try {
-        targetLayer = doc.layers.getByName(layerName);
-    } catch (e) {
-        log(["未找到名為 '" + layerName + "' 的圖層。"]);
-        return null;
-//檔案最後增加一筆資料
-    }
+//向上置中
+//topCenterByGroup("裁切","領",0,"底色")
 
-    // 在目标图层中查找指定名称的 pageItem
-    try {
-        var pageItem = targetLayer.pageItems.getByName(itemName);
-        return pageItem;
-    } catch (e) {
-        log(["在圖層 '" + layerName + "' 中未找到名為 '" + itemName + "' 的 pageItem。"]);
-        return null;
-    }
-}
+//bottomCenterBySelectName("裁切","右袖","底色");
 
+//bottomCenterBySelectName("裁切","左袖",0,"底色");
 
-function wordToGroup(layer) {
-    var groups = [];
-    layerName = layer.name;
-    for (var i = 0; i < layer.groupItems.length; i++) {
-        var group = layer.groupItems[i];
-        if("尺寸字" == group.name){
+// var doc = app.activeDocument;
+// itemA = getPageItemByNameInLayerByTarget(doc,"裁切","後片","底色");
+// var selectedItem = doc.selection[0];
+// centerByItem(itemA,selectedItem);
 
-          //alert("尺寸字 length : "+group.textFrames.length);
-          for(var j = 0;j<group.textFrames.length;j++){
-            textFrame = group.textFrames[j];
-            var str  = textFrame.contents;
+//a = topCenterXY("裁切", FrontBack_name,0,"底色");
 
+function xxx(layerName, targetItemName, distance , selectName){
+  var doc = app.activeDocument;
+  // 確認選取一個物件
+  if (doc.selection.length === 1) {
+      var selectedItem = doc.selection[0];
+      var groupItem = getPageItemByNameInLayer(doc,layerName,targetItemName);
+      var foundItem = findPageItemInGroupFirst(groupItem,selectName);
+      targetBounds = getBounds(foundItem);
 
+      rectFrameA = groupItem.layer.pathItems.rectangle(targetBounds.top, targetBounds.left, targetBounds.width, targetBounds.height);
 
-            if (str.indexOf("右袖") !== -1) {
-                item = getPageItemByNameInLayer(doc,"1","右袖");
-                groups.push([textFrame,item]);
-                alert("右袖");
-            }else if (str.indexOf("左袖") !== -1) {
-                item = getPageItemByNameInLayer(doc,"1","左袖");
-                groups.push([textFrame,item]);
-                alert("左袖");
-            }else if (str.indexOf("前片") !== -1) {
-                item = getPageItemByNameInLayer(doc,"1","前片");
-                groups.push([textFrame,item]);
-                alert("前袖");
-            }else if (str.indexOf("後片") !== -1) {
-                item = getPageItemByNameInLayer(doc,"1","後片");
-                groups.push([textFrame,item]);
-                alert("後袖");
-            }else{
-                item = getPageItemByNameInLayer(doc,"1","領");
-                groups.push([textFrame,item]);
-                alert("領");
-            }
-
-          }
-        }
-    }
-
-    for(var i=0;i<groups.length;i++){
-      groups[i][0].move(groups[i][1], ElementPlacement.PLACEATBEGINNING);
-    }
-
-    return groups;
-}
-
-
-
-for (var i = 0; i < doc.layers.length; i++) {
-  if("1" === doc.layers[i].name){
-    wordToGroup(doc.layers[i])
-
-    //getTopLevelGroupsFromLayer(doc.layers[i]);
+      selectedBounds = getBounds(findPageItemInGroupFirst(selectedItem,selectName));
+      rectFrameB = selectedItem.layer.pathItems.rectangle(selectedBounds.top, selectedBounds.left, selectedBounds.width, selectedBounds.height);
+      x = (targetBounds.left-selectedBounds.left)+(targetBounds.width-selectedBounds.width)/2;
+      y = (targetBounds.top -selectedBounds.top)-mm(distance);
+      //selectedItem.translate(x,y);
+      //alert("已將選取物件對齊至置中");
+      return{
+        left:x,
+        top:y
+      }
+  } else {
+      alert("請先選取一個物件！");
+      return null;
   }
 }
+var rectFrameA;
+var rectFrameB;
+a = xxx("裁切", "後片",0,"底色");
+//rectFrameB.translate(a.left,a.top);
