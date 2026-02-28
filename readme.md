@@ -2,5 +2,22 @@
 ======================
 使用jsx
 
+## 新增腳本
 
-**現在先不寫.**
+- `GenerateWhiteCompoundFromSelection.jsx`（建議使用這個英文檔名，GitHub 比較容易搜尋）
+  - 功能：用「一個紅色 X 來源物件」，透過數學方程式生成多組白色 X 圖案，最後合併成複合路徑。
+- `紅色物件隨機產生白色複合路徑.jsx`
+  - 與上面英文檔名內容相同，保留中文版本方便本機辨識。
+
+## 使用方式
+
+1. 在 Illustrator 先選取來源紅色 X（一個就可以）。
+2. 執行 `GenerateWhiteCompoundFromSelection.jsx`。
+3. 依序輸入：
+   - 圖案數量（群組數）
+   - 每個圖案最小半徑（格數）
+   - 每個圖案最大半徑（格數）
+   - X 間距倍率
+   - 圖案中心分散倍率
+   - 抖動比例
+4. 腳本會用數學方程式（superellipse / diamond / rose / lemniscate / ring）生成由白色 X 排列的圖，並建立複合路徑。
