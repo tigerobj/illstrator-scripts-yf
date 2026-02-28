@@ -1,4 +1,6 @@
 #include "json2.js";
+#include "排版-尺寸選擇.jsx";
+cloName = "新圓領衫";
 //log(["i",i,"opt new",opt]);
 function log (input) {
 
@@ -10,72 +12,14 @@ function log (input) {
     var pathEnv = $.getenv('CLOTH_TEMPLATE_CONFIG_PATH');
     var filePath = pathEnv;
     //var filePath = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/ai_script_workspace/ai_example/illustrator-scripts-master2";
-	//alert(app.activeDocument.filePath);
+    //alert(app.activeDocument.filePath);
     //var logFile = File(app.activeDocument.filePath + "/log.txt");
-    var logFile = File(filePath + "/排版-2L-新圓領衫.txt");
+    var logFile = File(filePath + "/排版-"+cloName+".txt");
 		logFile.encoding = "utf8";
     logFile.open("a");
     //alert(now.toTimeString() + ": " + output);
     logFile.writeln(now.toTimeString() + ": " + output);
     logFile.close(); //作測試修改222
-}
-function createFarme(selectedItem,name){
-    var doc = app.activeDocument;
-    // 取得指定圖層
-    try {
-        var targetLayer = doc.layers.getByName("操作");
-    } catch(e) {
-        targetLayer = doc.layers.add();
-        targetLayer.name = "操作";
-        alert("建立圖層名稱：" + targetLayer.name);
-    }
-    // 取得選取物件邊界
-    var bounds = selectedItem.geometricBounds;
-    var left = bounds[0];
-    var top = bounds[1];
-    var right = bounds[2];
-    var bottom = bounds[3];
-    var width = right - left;
-    var height = top - bottom;
-    // 建立矩形外框（與選取物件邊界一致）
-    var rectFrame = targetLayer.pathItems.rectangle(top, left, width, height);
-    // 設定矩形邊框為黑色1pt
-    rectFrame.stroked = false;
-    // rectFrame.strokeColor = new CMYKColor();
-    // rectFrame.strokeColor.black = 100;
-    // rectFrame.strokeWidth = 1;
-    // 設定內部填色為紅色
-    rectFrame.filled = true;
-    rectFrame.fillColor = new CMYKColor();
-    rectFrame.fillColor.cyan = 0;
-    rectFrame.fillColor.magenta = 100;
-    rectFrame.fillColor.yellow = 100;
-    rectFrame.fillColor.black = 0;
-    // 設定透明度為 50%
-    rectFrame.opacity = 50;
-    rectFrame.name = name;
-}
-
-/**
- * 讀取csv值,儲存成key,value物件值.
- * key為第一欄
- * values為第二欄
- */
-function readCsvToObj(csvFile){
-	csvFile.open('r');
-	var obj = new Object();
-	while (s = csvFile.readln()) {
-		kv = s.split(';');
-		if(kv.length ==1){
-			kv = s.split(',');
-			if(kv.length ==1){
-				alert("檔案分隔符號有問題請檢查檔案");
-			}
-		}
-		obj[kv[0]] = kv[1];
-	}
-	return obj;
-	csvFile.close();
 }
 
 /**
@@ -103,7 +47,6 @@ function findPageItemInGroup(item, itemName) {
 
     return null; // 如果未找到對應物件
 }
-
 
 /**
  * 在指定圖層中根據名稱獲取頁面物件，包括群組和遮罩內的物件。
@@ -134,6 +77,27 @@ function getPageItemByNameInLayer(doc, layerName, itemName) {
     }
 }
 
+/**
+ * 讀取csv值,儲存成key,value物件值.
+ * key為第一欄
+ * values為第二欄
+ */
+function readCsvToObj(csvFile){
+	csvFile.open('r');
+	var obj = new Object();
+	while (s = csvFile.readln()) {
+		kv = s.split(';');
+		if(kv.length ==1){
+			kv = s.split(',');
+			if(kv.length ==1){
+				alert("檔案分隔符號有問題請檢查檔案");
+			}
+		}
+		obj[kv[0]] = kv[1];
+	}
+	return obj;
+	csvFile.close();
+}
 
 function wordToGroup(layer) {
     var groups = [];
@@ -146,8 +110,9 @@ function wordToGroup(layer) {
           for(var j = 0;j<group.textFrames.length;j++){
             textFrame = group.textFrames[j];
             var str  = textFrame.contents;
-
-
+            if(textFrame.name){
+              str = textFrame.name;
+            }
 
             if (str.indexOf("右袖") !== -1) {
                 item = getPageItemByNameInLayer(doc,layer.name,"右袖");
@@ -182,70 +147,31 @@ function wordToGroup(layer) {
     return groups;
 }
 
-function bottomLeft(selectedItem,layerName, targetItemName, distance){
-    var doc = app.activeDocument;
-        // 取得指定圖層
-    try {
-        var targetLayer = doc.layers.getByName(layerName);
-    } catch(e) {
-        alert("找不到指定的圖層：" + layerName);
-    }
 
-    // 找尋目標群組
-    var foundItem  = null;
-    for(var i = 0; i < targetLayer.pageItems.length; i++){
-        if(targetLayer.pageItems[i].name == targetItemName){
-            foundItem = targetLayer.pageItems[i];
-            break;
-        }
-    }
+// 取得物件 geometricBounds 資訊函式
+function getBounds(item) {
+		var b = item.geometricBounds;
+		return {
+				left: b[0],
+				top: b[1],
+				right: b[2],
+				bottom: b[3],
+				width: (b[2] - b[0]),
+				height: (b[1] - b[3]),
+				centerX: (b[0] + b[2]) / 2,
+				centerY: (b[1] + b[3]) / 2
+		};
+}
 
-    if (!foundItem) {
-        alert("在圖層「" + layerName + "」內找不到群組「" + groupName + "」！");
-    }
-
-    // 取得目標群組的邊界資訊
-    var boundsGroup = foundItem.geometricBounds;
-    var groupLeft = boundsGroup[0];
-    var groupTop = boundsGroup[1];
-    var groupRight = boundsGroup[2];
-
-    // 取得選取物件的邊界資訊
-    var boundsItem2 = findPageItemInGroup(selectedItem,"框").geometricBounds;
-    var item2Left = boundsItem2[0];
-    var item2Top = boundsItem2[1];
-    var item2Width = boundsItem2[2] - boundsItem2[0];
-    var item2Height = boundsItem2[1] - boundsItem2[3];
-
-
-    var boundsItem = selectedItem.geometricBounds;
-    var itemLeft = boundsItem[0];
-    var itemTop = boundsItem[1];
-    var itemWidth = boundsItem[2] - boundsItem[0];
-    var itemHeight = boundsItem[1] - boundsItem[3];
-
-    // 轉換單位 (mm轉為點數，1mm = 2.834645 pt)
-    var verticalDistance = distance * 2.834645;
-
-    // 計算新位置
-    if(item2Left === itemLeft){
-      offsetX = groupLeft - itemLeft;
-    }
-    if(item2Left > itemLeft){
-      d = (item2Left - itemLeft);
-      offsetX = groupLeft - itemLeft -d;
-    }
-
-    if(item2Top === itemTop){
-      offsetY = groupTop - itemTop;
-    }
-    if(itemTop > item2Top){
-      d = (item2Top - itemTop);
-      offsetY = groupTop - itemTop -d;
-    }
-    selectedItem.translate(offsetX, offsetY);
-
-
+function topCenterXY(itemA, itemB){
+      targetBounds = getBounds(itemA);
+      selectedBounds = getBounds(findPageItemInGroup(itemB,"底色"));
+      x = (targetBounds.left-selectedBounds.left)+(targetBounds.width-selectedBounds.width)/2;
+      y = (targetBounds.top -selectedBounds.top);
+      return{
+        left:x,
+        top:y
+      }
 }
 
 function isNameInKeywords(name) {
@@ -275,23 +201,67 @@ function getTopLevelGroupsFromLayer(layer) {
         if("反" === layoutObj[layoutName]){
           group.rotate(180);
         }
+        alert(layoutName);
+        itemA = getPageItemByNameInLayer(app.activeDocument,"排版",layoutName);
+        alert(itemA);
+        a = topCenterXY(itemA,group);
         //alert(layoutName);
-        bottomLeft(group,"排版",layoutName,0);
+        group.translate(a.left,a.top);
+
     }
 
     return groups;
 }
 
+// /**
+//  * 判斷當前目錄下是否存在名為 'clothes.' 的檔案
+//  *
+//  * @returns {File} - 如果找到 'clothes.csv' 則返回檔案物件，否則返回 null
+//  */
+// function checkSizeFile() {
+//     var pathEnv = $.getenv('CLOTH_TEMPLATE_CONFIG_PATH');
+//     //alert(pathEnv);
+//     if (pathEnv === null) {
+//         alert("請設定環境變數 CLOTH_TEMPLATE_CONFIG_PATH");
+//         return null;
+//     }
+//     myPathEvn = pathEnv;
+//     var file = new File(pathEnv + '/尺寸.txt');
+//     if (!file.exists) {
+//         alert(pathEnv + '/尺寸.txt 檔案不存在！請複製 尺寸.txt，再重新執行');
+//         return null;
+//     }
+//     return file;
+// }
+
+String.prototype.trim = function() {
+	return this.replace(/(^[\s\n\r\t\x0B]+)|([\s\n\r\t\x0B]+$)/g, '');
+
+}
+
+// sFilse = checkSizeFile();
+
+// // 打開檔案進行讀取
+// if (sFilse.open('r')) {
+//     line = sFilse.readln(); // 讀取並忽略首行（標題行）
+//     var parts = line.split(';');
+//     clothes_size = parts[0].trim();
+//     sFilse.close(); // 關閉檔案
+// } else {
+//     alert('無法打開檔案: ' + filePath);
+// }
+
 var doc = app.activeDocument;
 var names = [];
 
-fileName = $.getenv('CLOTH_TEMPLATE_CONFIG_PATH')+"/排版-2L-新圓領衫.csv";
+clothes_size = selectSize(cloName);
+fileName = $.getenv('CLOTH_TEMPLATE_CONFIG_PATH')+"/排版-"+ clothes_size +"-"+cloName+".csv";
 layoutObj = readCsvToObj(File(fileName));
 
 for (var i = 0; i < doc.layers.length; i++) {
   if("排版" !== doc.layers[i].name){
-    wordToGroup(doc.layers[i]);
     //alert(doc.layers[i]);
+    //wordToGroup(doc.layers[i]);
     getTopLevelGroupsFromLayer(doc.layers[i]);
   }
 }

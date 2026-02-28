@@ -725,6 +725,60 @@ function findLastFileName(fmt,buildPath,extension){
 	}
 }
 
+/**
+ *
+ * fmt = "yyMMdd-nnn";
+ * dir = new File("D:/開發/客戶圖檔/杰優、裕豐工廠產品/ai_script_workspace/ai_example/build);
+ * extension = "ai";
+ * last = findLastFileName(fmt,dir,extension);
+ * autoCode.execute(fmt,last);
+ *
+ */
+function findLastFileNameByCustName(fmt,buildPath,extension,custName){
+
+	dir = new Folder(buildPath);
+	//alert(dir.displayName+"/*."+extension);
+	var files = dir.getFiles();
+	//alert(buildPath+"/*."+extension);
+	//alert(files.length);
+	//var num = str.lastIndexOf(".");
+	//str.substring(0,num);
+
+
+	if(files.length > 0){
+		//file.displayName;
+		//getActiveName
+		var tmpList=[];
+	    var value="";
+	    var fileExtension="";
+		for(var i=0;i<files.length;i++){
+			displayName = files[i].displayName;
+			nameArray = displayName.split(custName);
+			//alert(displayName+",nameArray.length = "+nameArray.length);
+			if(nameArray.length < 2 ){
+				continue;
+			}
+
+
+			num = files[i].displayName.lastIndexOf(".");
+			fileExtension = files[i].displayName.substring(num+1,files[i].displayName.length);
+			//alert(fileExtension);
+			if(fileExtension == extension){
+				//
+				//alert(files[i].displayName);
+				tmpList.push(getActiveName(files[i].displayName));
+			}
+
+			tmpList.sort();
+		}
+		value = tmpList[tmpList.length - 1];
+		//alert(value);
+		return value;
+	}else{
+		return "";
+	}
+}
+
 
 
 function fillColorToStr(cmykcolor){
