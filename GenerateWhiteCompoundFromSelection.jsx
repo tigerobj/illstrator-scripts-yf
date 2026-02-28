@@ -28,42 +28,19 @@
     var sourceBounds = source.visibleBounds;
     var white = createWhiteColor(doc);
     var layer = doc.activeLayer;
-    var shapeStore = loadShapeStore();
-    var recordFile = getRecordFile();
 
     var generated = layer.groupItems.add();
     generated.name = "數學方程式白色X圖_" + timeStamp();
 
-    var foundUnique = false;
     var occupied = [];
-    var shapeKey = "";
-    var eqType = 0;
-    var radius = 0;
+    var eqType = randomInt(0, 6);
+    var radius = randomInt(params.minCell, params.maxCell);
 
-    for (var attempt = 0; attempt < 100; attempt++) {
-        radius = randomInt(params.minCell, params.maxCell);
-        eqType = randomInt(0, 6);
-
-        occupied = equationCells(eqType, radius);
-        occupied = removeIsolatedCells(occupied, 1);
-        occupied = closeGaps(occupied, radius + 1, 5);
-        occupied = removeIsolatedCells(occupied, 1);
-        occupied = clampCellsInRadius(occupied, radius + 1);
-
-        shapeKey = buildShapeKey(eqType, radius, occupied);
-        if (!shapeStore[shapeKey]) {
-            shapeStore[shapeKey] = true;
-            appendShapeKey(recordFile, shapeKey);
-            foundUnique = true;
-            break;
-        }
-    }
-
-    if (!foundUnique) {
-        try { generated.remove(); } catch (e0) {}
-        alert("找不到新的不重複形狀（已比對記錄檔）。\n請調整參數後再試。");
-        return;
-    }
+    occupied = equationCells(eqType, radius);
+    occupied = removeIsolatedCells(occupied, 1);
+    occupied = closeGaps(occupied, radius + 1, 5);
+    occupied = removeIsolatedCells(occupied, 1);
+    occupied = clampCellsInRadius(occupied, radius + 1);
 
     var sourceW = Math.max(1, sourceBounds[2] - sourceBounds[0]);
     var sourceH = Math.max(1, sourceBounds[1] - sourceBounds[3]);
@@ -99,7 +76,7 @@
 
     doc.selection = null;
     compound.selected = true;
-    alert("完成：已產生 1 個複合路徑。\n形狀記錄檔：" + recordFile.fsName);
+    alert("完成：已產生 1 個複合路徑。");
 
     function showConfigDialog() {
         var w = new Window("dialog", "白色X圖樣參數設定");
@@ -440,61 +417,6 @@
                 collectPathItems(item.pageItems[j], output);
             }
         }
-    }
-
-    function getRecordFile() {
-        return File(Folder.myDocuments + "/ai_white_x_shape_log.txt");
-    }
-
-    function loadShapeStore() {
-        var store = {};
-        var f = getRecordFile();
-        if (!f.exists) {
-            return store;
-        }
-
-        if (!f.open("r")) {
-            return store;
-        }
-
-        while (!f.eof) {
-            var line = f.readln();
-            if (line && line.length > 0) {
-                store[line] = true;
-            }
-        }
-        f.close();
-        return store;
-    }
-
-    function appendShapeKey(fileRef, key) {
-        if (!fileRef.open("a")) {
-            return;
-        }
-        fileRef.writeln(key);
-        fileRef.close();
-    }
-
-    function buildShapeKey(eqType, radius, cells) {
-        var normalized = [];
-        for (var i = 0; i < cells.length; i++) {
-            normalized.push(cells[i][0] + "," + cells[i][1]);
-        }
-        normalized.sort();
-        var raw = eqType + "|" + radius + "|" + normalized.join(";");
-        return "v1|" + hashString(raw);
-    }
-
-    function hashString(str) {
-        var h = 2166136261;
-        for (var i = 0; i < str.length; i++) {
-            h ^= str.charCodeAt(i);
-            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
-        }
-        if (h < 0) {
-            h = 0xFFFFFFFF + h + 1;
-        }
-        return h.toString(16);
     }
 
     function randomRange(min, max) {
