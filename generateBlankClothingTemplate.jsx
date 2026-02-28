@@ -4,7 +4,6 @@
 #include "selectMenu.jsx";
 
 
-
 //log(["i",i,"opt new",opt]);
 function log (input) {
 
@@ -33,7 +32,7 @@ function getPageItemByName(name){
             return allPageItems[i];
         }
     }
-    return null;  // 如果没有找到匹配的 PathItem	
+    return null;  // 如果没有找到匹配的 PathItem
 }
 
 // 根据名称获取 PathItem 对象的函数
@@ -50,37 +49,37 @@ function getPathItemByName(name) {
 
 /**
  * 將不同圖層中相同名稱的頁面物件對齊，並替換遮罩中的物件，同時設置填色。
- * 
+ *
  * @param {string} sourceLayerName - 來源圖層名稱（不在遮罩內的物件所在圖層）。
  * @param {string} targetLayerName - 目標圖層名稱（在遮罩內的物件所在圖層）。
  * @param {string} itemName - 頁面物件的名稱。
  */
 function alignReplaceAndSetFill(sourceLayerName, targetLayerName, itemName) {
     var doc = app.activeDocument;
-    
+
     // 獲取來源物件（不在遮罩內）
     var sourceItem = getPageItemByNameInLayer(doc, sourceLayerName, itemName);
-    
+
     // 獲取目標物件（在遮罩內）
     var targetItem = getPageItemByNameInLayer(doc, targetLayerName, itemName);
-    
+
     if (sourceItem && targetItem) {
         // 解鎖並顯示來源和目標物件
         unlockAndShowItem(sourceItem);
         unlockAndShowItem(targetItem);
-        
+
         // 設置目標物件的填色為來源物件的填色
         setFillColor(targetItem,sourceItem);
-        
-        
+
+
         // 對齊來源物件到目標物件
         alignItems(sourceItem, targetItem);
-        
+
         // 替換遮罩中的物件
         //replaceMaskItem(targetItem, sourceItem);
-        
-        
-        
+
+
+
         //alert("已成功對齊、替換遮罩中的物件並設置填色。");
     } else {
         if (!sourceItem) {
@@ -95,7 +94,7 @@ function alignReplaceAndSetFill(sourceLayerName, targetLayerName, itemName) {
 
 /**
  * 遞歸查找指定圖層中的頁面物件。
- * 
+ *
  * @param {Item} item - 目前檢查的物件。
  * @param {string} itemName - 要查找的物件名稱。
  * @returns {PageItem|null} - 返回對應的頁面物件，如果未找到則返回 null。
@@ -122,7 +121,7 @@ function findPageItemInGroup(item, itemName) {
 
 /**
  * 在指定圖層中根據名稱獲取頁面物件，包括群組和遮罩內的物件。
- * 
+ *
  * @param {Document} doc - Adobe Illustrator 文件對象。
  * @param {string} layerName - 圖層的名稱。
  * @param {string} itemName - 頁面物件的名稱。
@@ -145,7 +144,7 @@ function getPageItemByNameInLayer(doc, layerName, itemName) {
 
 /**
  * 在指定圖層中遞歸查找位於遮罩內的頁面物件。
- * 
+ *
  * @param {Document} doc - Adobe Illustrator 文件對象。
  * @param {string} layerName - 圖層的名稱。
  * @param {string} itemName - 頁面物件的名稱。
@@ -179,7 +178,7 @@ function getMaskedPageItemByNameInLayer(doc, layerName, itemName) {
 
 /**
  * 根據名稱獲取圖層。
- * 
+ *
  * @param {Document} doc - Adobe Illustrator 文件對象。
  * @param {string} layerName - 圖層名稱。
  * @returns {Layer|null} - 返回匹配的圖層或 null。
@@ -196,7 +195,7 @@ function getLayerByName(doc, layerName) {
 
 /**
  * 遞歸查找頁面物件。
- * 
+ *
  * @param {PageItem} parent - 父頁面物件。
  * @param {string} itemName - 頁面物件的名稱。
  * @returns {PageItem|null} - 返回匹配的頁面物件或 null。
@@ -219,7 +218,7 @@ function findPageItemRecursively(parent, itemName) {
 
 /**
  * 檢查頁面物件是否為遮罩。
- * 
+ *
  * @param {PageItem} item - 頁面物件。
  * @returns {boolean} - 如果是遮罩則返回 true，否則返回 false。
  */
@@ -232,7 +231,7 @@ function isClippingMask(item) {
 
 /**
  * 解鎖並顯示頁面物件。
- * 
+ *
  * @param {PageItem} item - 頁面物件。
  */
 function unlockAndShowItem(item) {
@@ -242,43 +241,43 @@ function unlockAndShowItem(item) {
 
 /**
  * 對齊兩個頁面物件的位置（使中心點對齊）。
- * 
+ *
  * @param {PageItem} sourceItem - 來源頁面物件。
  * @param {PageItem} targetItem - 目標頁面物件。
  */
 function alignItems(sourceItem, targetItem) {
     var sourceBounds = sourceItem.visibleBounds; // [上, 左, 下, 右]
     var targetBounds = targetItem.visibleBounds;
-    
+
     targetItem.selected = true;
-    
+
     var sourceCenterX = (sourceBounds[0] + sourceBounds[2]) / 2;
     var sourceCenterY = (sourceBounds[1]);
-    
+
     var targetCenterX = (targetBounds[0] + targetBounds[2]) / 2;
     var targetCenterY = (targetBounds[1]);
-    
+
     var deltaX = (targetCenterX - sourceCenterX);
     var deltaY = targetCenterY - sourceCenterY;
-    
+
     sourceItem.translate(deltaX, deltaY);
 }
 
 /**
  * 替換遮罩中的頁面物件。
- * 
+ *
  * @param {PageItem} maskItem - 遮罩中的頁面物件。
  * @param {PageItem} newItem - 新的頁面物件，用於替換。
  */
 function replaceMaskItem(maskItem, newItem) {
     var parentGroup = maskItem.parent;
-    
+
     // 複製新物件
     var duplicatedItem = newItem.duplicate(parentGroup, ElementPlacement.PLACEATEND);
-    
+
     // 移除原遮罩物件
     maskItem.remove();
-    
+
     // 如果原來是群組且有遮罩，確保新物件也屬於該群組
     if (parentGroup.typename === "GroupItem" && parentGroup.clipped) {
         duplicatedItem.move(parentGroup, ElementPlacement.PLACEATEND);
@@ -287,7 +286,7 @@ function replaceMaskItem(maskItem, newItem) {
 
 /**
  * 將一個頁面物件的填色設置為另一個頁面物件的填色。
- * 
+ *
  * @param {PageItem} sourceItem - 來源頁面物件。
  * @param {PageItem} targetItem - 目標頁面物件。
  */
@@ -308,7 +307,7 @@ function setFillColor(sourceItem, targetItem) {
 
 /**
  * 根據名稱獲取頁面物件。
- * 
+ *
  * @param {string} name - 頁面物件的名稱。
  * @returns {PageItem|null} - 對應的頁面物件。
  */
@@ -326,9 +325,6 @@ function getPageItemByName(name) {
 // 使用範例
 // 將來源圖層 "設計層" 中名稱為 "底" 的物件，對齊到目標圖層 "遮罩圖層" 中名稱為 "底" 的物件，並替換遮罩內的物件，同時設置填色
 //alignReplaceAndSetFill("設計層", "遮罩圖層", "底");
-
-
-
 
 function getGroupItemByName(name){
 	var allGroupItems = doc.groupItems;
@@ -371,7 +367,7 @@ function findPathPointByPosition(pathItem,targetLeft, targetTop) {
             break;
         }
     }
-    
+
 
 
     return foundPoint;
@@ -394,26 +390,26 @@ function writerObjToCsv(csvFile,obj){
 		}
 		content = content+key+";"+obj[key];
 		n++;
-		
+
 	}
-		
+
 	csvFile.write(content);
 	csvFile.close();
 }
 
 function drawCircle(name,diameter,list){
-	
+
 	item = getPathItemByName(name);
-	
+
 	if (item !== null) {
 		point = item.geometricBounds[0];
 		var positionX = item.geometricBounds[0];  // 水平位置
 		var positionY = item.geometricBounds[1];  // 垂直位置
-		
+
 		// 圆的直径
 		var diameterPoints = mm(diameter);
 		for (var i = 0; i < list.length; i++) {
-			
+
 			positionY = positionY-mm(list[i]);
 			if(i == 2){
 				//continue;
@@ -427,12 +423,12 @@ function drawCircle(name,diameter,list){
 			circle.strokeColor.red = 0;
 			circle.strokeColor.green = 0;
 			circle.strokeColor.blue = 0;  // 黑色笔画
-			
+
 			circle.filled = false;  // 没有填充颜色
 			circle.name="鈕扣"+i;
 		}
 
-		
+
 	}
 }
 
@@ -445,7 +441,7 @@ function getItemByPlusMinus(layer,isPlus){
 	//for (var i = 0; i < list.length; i++) {
 	pageItemA = layer.pageItems[0].pageItems[0];
 	pageItemB = layer.pageItems[1].pageItems[0];
-	 
+
 	if(pageItemA.geometricBounds[1] > pageItemB.geometricBounds[1]){
 		up =  pageItemA;
 		down =  pageItemB;
@@ -453,14 +449,14 @@ function getItemByPlusMinus(layer,isPlus){
 		up =  pageItemB;
 		down =  pageItemA;
 	}
-	
+
 	if(isPlus){
 		return up;
 	}else{
 		return down;
 	}
-	
-	
+
+
 }
 
 
@@ -476,7 +472,7 @@ function mirror(c,o,name){
 	tmp.strokeColor = strokeColor;
 	tmp.transform(translationMatrix);
 	tmp.transform(totalMatrix);
-	
+
 }
 
 function mirrorByPt(o,name,w){
@@ -487,7 +483,7 @@ function mirrorByPt(o,name,w){
 	//tmp.strokeColor = strokeColor;
 	tmp.transform(translationMatrix);
 	tmp.transform(totalMatrix);
-	
+
 }
 
 function groupsCopy(doc,path,groupList){
@@ -495,8 +491,8 @@ function groupsCopy(doc,path,groupList){
 	for (var i = 0; i < groupList.length; i++) {
 		getGroupItemByNameForDoc(sourceDoc,groupList[i]).selected = true;
 	}
-	app.copy();	
-	app.activeDocument = doc;	
+	app.copy();
+	app.activeDocument = doc;
 	app.paste();
 	sourceDoc.close(SaveOptions.DONOTSAVECHANGES);
 }
@@ -518,7 +514,7 @@ function moveTeamNameByHeight(topName,centerName,teamNameheight,groupList){
 	for (var i = 0; i < groupList.length; i++) {
 		groupItems.push(getGroupItemByName(groupList[i]));
 	}
-	
+
 	topItem = getPathItemByName(topName);
 	centerItem = getPathItemByName(centerName);
 	pasteY = topItem.geometricBounds[1]-mm(teamNameheight);
@@ -528,14 +524,14 @@ function moveTeamNameByHeight(topName,centerName,teamNameheight,groupList){
 	groupWidth = groupBounds[2] - groupBounds[0];
 	groupHeight = groupBounds[1] - groupBounds[3];
 	currentX = groupBounds[0] + (groupWidth / 2);
-	currentY = groupBounds[1] ; 
+	currentY = groupBounds[1] ;
 	offsetX = pasteX - currentX;
-	offsetY = pasteY - currentY;	
+	offsetY = pasteY - currentY;
     for(var i=0;i<groupItems.length; i++){
 		groupItems[i].translate(offsetX, offsetY);
 		groupItems[i].selected = false;
 	}
-	
+
 }
 
 function moveTeamNameByScaleFactor (topName,centerName,heightName,scaleFactor,groupList){
@@ -546,17 +542,17 @@ function moveTeamNameByScaleFactor (topName,centerName,heightName,scaleFactor,gr
 
 
 function movePageItemByHeight(topName,centerName,teamNameheight,name){
-	itme = getPageItemByName(name);	
+	itme = getPageItemByName(name);
 	topItem = getPathItemByName(topName);
 	centerItem = getPathItemByName(centerName);
 	pasteY = topItem.geometricBounds[1]-mm(teamNameheight);
-	pasteX = centerItem.geometricBounds[0]+centerItem.width/2; //x:中心	
+	pasteX = centerItem.geometricBounds[0]+centerItem.width/2; //x:中心
 	groupWidth = itme.geometricBounds[2] - itme.geometricBounds[0];
 	groupHeight = itme.geometricBounds[1] - itme.geometricBounds[3];
 	currentX = itme.geometricBounds[0] + (groupWidth / 2);
-	currentY = itme.geometricBounds[1] ; 
+	currentY = itme.geometricBounds[1] ;
 	offsetX = pasteX - currentX;
-	offsetY = pasteY - currentY;	
+	offsetY = pasteY - currentY;
 	itme.translate(offsetX, offsetY);
 	itme.selected = false;
 }
@@ -565,7 +561,7 @@ function movePageItemByHeight(topName,centerName,teamNameheight,name){
 function movePageItem(layerName,moveDistance){
 	// 將毫米轉換為點（1毫米約等於2.8346點）
 	var moveDistancePoints = mm(moveDistance);
-	movePageItemLT(layerName,moveDistancePoints,0);	
+	movePageItemLT(layerName,moveDistancePoints,0);
 }
 
 function movePageItemLT(layerName,left,top){
@@ -575,20 +571,20 @@ function movePageItemLT(layerName,left,top){
 	    var pathItem = layer.pathItems[i];
 	    pathItem.translate(left, top);  // 向左移動
 	}
-	
+
 	// 遍歷圖層中的所有文本框並移動它們
 	for (var i = 0; i < layer.textFrames.length; i++) {
 	    var textFrame = layer.textFrames[i];
 	    textFrame.translate(left, top);  // 向左移動
 	}
-	
+
 	// 遍歷圖層中的所有其他類型的項目並移動它們
 	for (var i = 0; i < layer.pageItems.length; i++) {
 	    var pageItem = layer.pageItems[i];
 	    if (pageItem.typename !== "PathItem" && pageItem.typename !== "TextFrame") {
 	        pageItem.translate(left, top);  // 向左移動
 	    }
-	}	
+	}
 }
 
 
@@ -617,15 +613,15 @@ function getLeftmostPosition(layerName) {
 
     // 遍歷圖層中的所有物件
     for (var i = 0; i < layer.pageItems.length; i++) {
-		
+
         var item = layer.pageItems[i];
         if (i == 0){
 			leftmost = item.geometricBounds[0];
 		}
-        
+
         // 更新最左邊的 x 坐標值
         if (item.geometricBounds[0] < leftmost) {
-            leftmost = item.geometricBounds[0]; 
+            leftmost = item.geometricBounds[0];
         }
     }
 
@@ -657,13 +653,13 @@ function getRightmostPosition(layerName) {
 
     // 遍歷圖層中的所有物件
     for (var i = 0; i < layer.pageItems.length; i++) {
-		
+
         var item = layer.pageItems[i];
-        
+
         if (i == 0){
 			rightmost = item.geometricBounds[2]+item.width;
 		}
-		
+
 		//rightmost = item.geometricBounds[2];
         // 更新最右邊的 x 坐標值
         if (item.visible && (item.geometricBounds[2]+item.width) > rightmost) {
@@ -688,13 +684,13 @@ function alignObjectsToLeftMargin(layerName, leftMargin, topMargin) {
 	    var item = layer.pathItems[i];
 	    item.translate(distanceToMove, topMargin);  // 向左移動
 	}
-	
+
 	// 遍歷圖層中的所有文本框並移動它們
 	for (var i = 0; i < layer.textFrames.length; i++) {
 	    var textFrame = layer.textFrames[i];
 	    textFrame.translate(distanceToMove, topMargin);  // 向左移動
 	}
-	
+
 	// 遍歷圖層中的所有其他類型的項目並移動它們
 	for (var i = 0; i < layer.pageItems.length; i++) {
 	    var pageItem = layer.pageItems[i];
@@ -711,7 +707,7 @@ function alignObjectsToLeftMargin(layerName, leftMargin, topMargin) {
  */
 function alignObjectsToRightMargin(layerName, rightMargin, topMargin) {
     var doc = app.activeDocument;
-    
+
     try {
         var layer = doc.layers.getByName(layerName);
     } catch (e) {
@@ -734,8 +730,8 @@ function alignObjectsToRightMargin(layerName, rightMargin, topMargin) {
 			maxX = bounds[2];
 			minY = bounds[3];
 		}
-        
-        
+
+
         if (bounds[0] < minX) minX = bounds[0]; // 左
         if (bounds[1] > maxY) maxY = bounds[1]; // 上
         if (bounds[2] > maxX) maxX = bounds[2]; // 右
@@ -746,7 +742,7 @@ function alignObjectsToRightMargin(layerName, rightMargin, topMargin) {
         alert("沒有可見物件或物件無邊界。");
         return;
     }
-    
+
     var artboard = doc.artboards[doc.artboards.getActiveArtboardIndex()]; // 獲取當前的藝術板
     var artboardBounds = artboard.artboardRect; // [左, 上, 右, 下]
 
@@ -755,9 +751,9 @@ function alignObjectsToRightMargin(layerName, rightMargin, topMargin) {
 
     // 計算直線的 x 座標位置
     var lineX = artboardBounds[2] - rightMargin;
-    
-    
-     
+
+
+
     var distanceToMove = lineX-maxX;
     //var distanceToMove = artboardRight -  getRightmostPosition(layerName);
 
@@ -765,13 +761,13 @@ function alignObjectsToRightMargin(layerName, rightMargin, topMargin) {
 	    var item = layer.pathItems[i];
 	    item.translate(distanceToMove, topMargin);  // 向左移動
 	}
-	
+
 	// 遍歷圖層中的所有文本框並移動它們
 	for (var i = 0; i < layer.textFrames.length; i++) {
 	    var textFrame = layer.textFrames[i];
 	    textFrame.translate(distanceToMove, topMargin);  // 向左移動
 	}
-	
+
 	// 遍歷圖層中的所有其他類型的項目並移動它們
 	for (var i = 0; i < layer.pageItems.length; i++) {
 	    var pageItem = layer.pageItems[i];
@@ -788,7 +784,7 @@ function alignObjectsToRightMargin(layerName, rightMargin, topMargin) {
  */
 function drawBoundaryBox(layerName) {
     var doc = app.activeDocument;
-    
+
     try {
         var layer = doc.layers.getByName(layerName);
     } catch (e) {
@@ -811,8 +807,8 @@ function drawBoundaryBox(layerName) {
 			maxX = bounds[2];
 			minY = bounds[3];
 		}
-        
-        
+
+
         if (bounds[0] < minX) minX = bounds[0]; // 左
         if (bounds[1] > maxY) maxY = bounds[1]; // 上
         if (bounds[2] > maxX) maxX = bounds[2]; // 右
@@ -879,7 +875,7 @@ function drawBoundingBoxForGroups(groupNames,layer) {
         alert('群組名稱清單為空或未提供');
         return;
     }
-    
+
     // 初始化邊界
     var minX = Infinity;
     var maxX = -Infinity;
@@ -898,14 +894,14 @@ function drawBoundingBoxForGroups(groupNames,layer) {
 			maxX = bounds[2];
 			minY = bounds[3];
 		}
-        
-        
+
+
         if (bounds[0] < minX) minX = bounds[0]; // 左
         if (bounds[1] > maxY) maxY = bounds[1]; // 上
         if (bounds[2] > maxX) maxX = bounds[2]; // 右
         if (bounds[3] < minY) minY = bounds[3]; // 下
     }
-    
+
     if (minX == Infinity || maxX == -Infinity || minY == Infinity || maxY == -Infinity) {
         alert("沒有可見物件或物件無邊界。");
         return;
@@ -917,7 +913,7 @@ function drawBoundingBoxForGroups(groupNames,layer) {
 
     // 繪製紅色邊界框
     var boundaryBox = layer.pathItems.rectangle(maxY, minX, width, height);
-    
+
     var borderColor = new CMYKColor();
     borderColor.cyan = 0;
     borderColor.magenta = 100;
@@ -925,14 +921,14 @@ function drawBoundingBoxForGroups(groupNames,layer) {
     borderColor.black = 0;
     boundaryBox.strokeColor = borderColor;
     boundaryBox.filled = false; // 設定為無填充色
-    boundaryBox.strokeWidth = 2; // 線條寬度為 2 點    
+    boundaryBox.strokeWidth = 2; // 線條寬度為 2 點
     //boundingBox.name = "隊名邊框";
     return boundaryBox;
 }
 
 /**
  * 根據名稱和縮放因子縮放頁面物件。
- * 
+ *
  * @param {number} scaleFactor - 縮放因子，0.5 代表縮小到一半，2 代表放大兩倍。
  * @param {Array} names - 需要縮放的頁面物件名稱的數組。
  * @param {Array} transformations - 縮放中心點的數組，對應於每個頁面物件。
@@ -948,7 +944,7 @@ function scalePageItems(scaleFactor, names, transformations) {
     for (var i = 0; i < names.length; i++) {
         var name = names[i];
         var transformation = transformations[i];
-        
+
         var pageItem = getPageItemByName(name);
         if (pageItem) {
             // 計算縮放百分比
@@ -974,7 +970,7 @@ function scalePageItems(scaleFactor, names, transformations) {
 
 /**
  * 根據名稱和縮放因子縮放頁面物件。
- * 
+ *
  * @param {number} scaleFactor - 縮放因子，0.5 代表縮小到一半，2 代表放大兩倍。
  * @param {Array} pageItem - 需要縮放的頁面物件。
  * @param {Array} transformation - 縮放中心點。
@@ -1003,13 +999,13 @@ function copyPageItem(pageItem){
 	strokeColor.red = 0;
 	strokeColor.green = 0;
 	strokeColor.blue = 0;  // 黑色
-	
+
 	newItem = pageItem.duplicate(doc, ElementPlacement.PLACEATBEGINNING);
 	newItem.strokeColor = strokeColor;
 	newItem.strokeWidth = 0.75;
 	app.activeDocument = doc;
 	return newItem;
-	
+
 }
 
 function getPoint(pageItem,w,h){
@@ -1022,7 +1018,7 @@ function getPoint(pageItem,w,h){
 
 function moveToPoint(pageItem1,w1,h1,pageItem2,w2,h2){
 	p1 = getPoint(pageItem1,w1,h1);
-	p2 = getPoint(pageItem2,w2,h2); 
+	p2 = getPoint(pageItem2,w2,h2);
 	translationMatrix = app.getTranslationMatrix(p1[0]-p2[0], p1[1]-p2[1]);
 	return translationMatrix;
 }
@@ -1048,7 +1044,7 @@ function angleDegrees(p,r,i1,i2,b1,b2,list,b3){
 	var translateToOrigin = app.getTranslationMatrix(-p[0], -p[1]);
 	// 生成平移矩阵，将路径移动回原位置
 	var translateBack = app.getTranslationMatrix(p[0], p[1]);
-	
+
 	for (var i = 0; i < list.length; i++) {
 		list[i].transform(translateToOrigin, true, true, true, true, 1, Transformation.DOCUMENTORIGIN)
 		list[i].transform(rotationMatrix, true, true, true, true, 1, Transformation.DOCUMENTORIGIN);
@@ -1063,7 +1059,7 @@ function getMirrorWidth(item1,item2){
 	v2 = item2.geometricBounds[2];
 	w = (v1-v2)*2+item2.width;
 	return w;
-	
+
 }
 
 //旋轉方向傳入欄位名稱例如 後袖旋轉方向
@@ -1088,7 +1084,7 @@ function getPath(value){
 
 /**
  * 將指定的頁面物件移動至另一個頁面物件之前或之後。
- * 
+ *
  * @param {string} itemToMoveName - 要移動的頁面物件名稱。
  * @param {string} referenceItemName - 參考頁面物件名稱，將 itemToMoveName 移動到這個物件之前或之後。
  * @param {boolean} moveBefore - 如果為 true，將 itemToMoveName 移動到 referenceItemName 之前，否則移動到 referenceItemName 之後。
@@ -1096,7 +1092,7 @@ function getPath(value){
 function moveItem(itemToMoveName, referenceItemName, moveBefore) {
     var itemToMove = getPageItemByName(itemToMoveName);
     var referenceItem = getPageItemByName(referenceItemName);
-    
+
     if (itemToMove && referenceItem) {
         if (moveBefore) {
             // 將 itemToMove 移動到 referenceItem 之前
@@ -1117,14 +1113,14 @@ function moveItem(itemToMoveName, referenceItemName, moveBefore) {
 
 /**
  * 將指定的頁面物件移動到圖層的最前面或最後面。
- * 
+ *
  * @param {string} itemName - 要移動的頁面物件名稱。
  * @param {boolean} moveToFront - 如果為 true，將物件移動到圖層的最前面；如果為 false，將物件移動到圖層的最後面。
  */
 function arrangeItemOrder(itemName, moveToFront) {
     var doc = app.activeDocument;
     var item = getPageItemByName(itemName);
-    
+
     if (item) {
         if (moveToFront) {
             // 將 item 移動到圖層的最前面
@@ -1142,7 +1138,7 @@ function arrangeItemOrder(itemName, moveToFront) {
 
 /**
  * 在指定圖層中，釋放指定名稱的剪裁遮色片群組，並移除該群組。
- * 
+ *
  * @param {string} layerName - 圖層的名稱（例如 "設計層"）。
  * @param {string} groupName - 剪裁遮色片群組的名稱（例如 "剪裁群組_底"）。
  */
@@ -1180,7 +1176,7 @@ function releaseAndRemoveClippingMaskGroup(layerName, groupName) {
 
 /**
  * 釋放剪裁遮色片。
- * 
+ *
  * @param {GroupItem} maskGroup - 剪裁遮色片群組對象。
  */
 function releaseClippingMask(maskGroup) {
@@ -1194,17 +1190,17 @@ function releaseClippingMask(maskGroup) {
 
     // 如果需要，將群組內的物件移出群組
     // 取消以下註解可將物件移出群組
-    
+
     var parent = maskGroup.parent;
     while (maskGroup.pageItems.length > 0) {
         maskGroup.pageItems[0].move(parent, ElementPlacement.PLACEATEND);
     }
-    
+
 }
 
 /**
  * 解鎖並顯示指定的頁面物件。
- * 
+ *
  * @param {PageItem} item - 要解鎖和顯示的物件。
  */
 function unlockAndShowItem(item) {
@@ -1219,7 +1215,7 @@ function unlockAndShowItem(item) {
 
 /**
  * 移除指定圖層內名稱為 pageItemName 的頁面物件。
- * 
+ *
  * @param {string} layerName - 圖層的名稱。
  * @param {string} pageItemName - 頁面物件的名稱。
  */
@@ -1234,7 +1230,7 @@ function removePageItem(layerName, pageItemName) {
     }
 
     // 在圖層中尋找指定名稱的 pageItem
-    
+
     var pageItem = getPageItemByNameInLayer(doc, layerName, pageItemName);
     if (!pageItem) {
         alert("在圖層 '" + layerName + "' 中找不到名稱為 '" + pageItemName + "' 的頁面物件。");
@@ -1251,7 +1247,7 @@ function removePageItem(layerName, pageItemName) {
 
 /**
  * 將指定的頁面物件移動到目標圖層，並排序為該圖層中的第一個物件。
- * 
+ *
  * @param {string} sourceLayerName - 來源圖層的名稱。
  * @param {string} pageItemName - 要移動的頁面物件的名稱。
  * @param {string} targetLayerName - 目標圖層的名稱。
@@ -1292,7 +1288,7 @@ function movePageItemToLayerAsFirst(sourceLayerName, pageItemName, targetLayerNa
 
 /**
  * 在指定圖層內，選擇所有物件並將它們製作成剪裁遮色片，並設定遮罩群組的名稱。
- * 
+ *
  * @param {string} layerName - 要操作的圖層名稱。
  * @param {string} clippingMaskGroupName - 要設定的遮罩群組名稱。
  */
@@ -1307,27 +1303,27 @@ function createClippingMaskForLayerWithName(layerName, clippingMaskGroupName,ite
         alert("找不到名稱為 '" + layerName + "' 的圖層。");
         return;
     }
-    
+
     // 獲取圖層內的所有頁面物件
     var items = layer.pageItems;
     if (items.length < 2) {
         alert("圖層 '" + layerName + "' 內的物件不足以製作剪裁遮色片。需要至少 2 個物件。");
         return;
     }
-    
+
     // 解鎖並顯示所有物件
     for (var i = 0; i < items.length; i++) {
         unlockAndShowItem(items[i]);
     }
-    
+
     // 選取圖層內的所有物件
     for (var i = 0; i < items.length; i++) {
         items[i].selected = true;
     }
-    
+
     // 執行製作剪裁遮色片的命令
     app.executeMenuCommand('makeMask');
-    
+
     // 在圖層中尋找新的剪裁遮色片群組
     var clippingGroup = null;
     for (var i = 0; i < layer.groupItems.length; i++) {
@@ -1337,7 +1333,7 @@ function createClippingMaskForLayerWithName(layerName, clippingMaskGroupName,ite
             break;
         }
     }
-    
+
     if (clippingGroup) {
         // 設定剪裁遮色片群組的名稱
         clippingGroup.name = clippingMaskGroupName;
@@ -1345,7 +1341,7 @@ function createClippingMaskForLayerWithName(layerName, clippingMaskGroupName,ite
     } else {
         alert("未能找到新的剪裁遮色片群組。");
     }
-    
+
     myItem.fillColor4 = fillColor;
     //fillColor
     // 清除選取
@@ -1355,7 +1351,7 @@ function createClippingMaskForLayerWithName(layerName, clippingMaskGroupName,ite
 
 /**
  * 將指定的頁面物件移動到目標圖層，並在目標圖層中將其排列在指定的頁面物件之後。
- * 
+ *
  * @param {string} sourceLayerName - 來源圖層的名稱。
  * @param {string} pageItemName - 要移動的頁面物件的名稱。
  * @param {string} targetLayerName - 目標圖層的名稱。
@@ -1407,7 +1403,7 @@ function movePageItemToLayerAfterItem(sourceLayerName, pageItemName, targetLayer
 
 /**
  * 將來源頁面物件移動並對齊到目標頁面物件的左上角。
- * 
+ *
  * @param {string} sourceLayerName - 來源圖層的名稱。
  * @param {string} sourcePageItemName - 要移動的頁面物件的名稱。
  * @param {string} targetLayerName - 目標圖層的名稱。
@@ -1429,7 +1425,7 @@ function alignPageItemToTopLeft(sourceLayerName, sourcePageItemName,movePageItem
         alert("在圖層 '" + targetLayerName + "' 中找不到名稱為 '" + targetPageItemName + "' 的目標頁面物件。");
         return;
     }
-    
+
     //
     //移動的頁面物件
     var movePageItem = getPageItemByNameInLayer(doc,sourceLayerName, movePageItemName);
@@ -1458,23 +1454,23 @@ function alignPageItemToTopLeft(sourceLayerName, sourcePageItemName,movePageItem
     var deltaX = targetTopLeftX - sourceTopLeftX;
     var deltaY = targetTopLeftY - sourceTopLeftY;
 
-	
+
     // 移動來源頁面物件到目標頁面物件的左上角
     movePageItem.translate(deltaX, deltaY);
     targetPageItem.selected = false;
 	sourcePageItem.selected = false;
 	return [deltaX, deltaY];
-    
+
     //alert("sourcePageItem x : "+sourcePageItem.geometricBounds[0]);
     //alert("targetPageItem x : "+targetPageItem.geometricBounds[0]);
-    
+
 
     //alert("已成功將頁面物件 '" + sourcePageItemName + "' 移動並對齊到 '" + targetPageItemName + "' 的左上角。");
 }
 
 /**
  * 將指定的頁面物件在 y 軸上移動指定的距離（正數為向下，負數為向上）。
- * 
+ *
  * @param {string} layerName - 來源圖層的名稱。
  * @param {string} pageItemName - 要移動的頁面物件名稱。
  * @param {number} distance - 要移動的距離（正數表示向下，負數表示向上）。
@@ -1507,7 +1503,7 @@ function movePageItemVertically(layerName, pageItemName, distance) {
 
 /**
  * 根據提供的名稱列表，按照倒序重新排列指定圖層中的 pageItems 順序
- * 
+ *
  * @param {string} layerName - 要進行排序的圖層名稱
  * @param {Array} nameOrderList - 按照這個名稱順序對應的 pageItems 進行排序
  */
@@ -1546,7 +1542,7 @@ function reorderPageItemsInLayer(layerName, nameOrderList) {
 
 /**
  * 從指定文檔和 pageItem 名稱中獲取填色
- * 
+ *
  * @param {Document} doc - 要操作的文檔
  * @param {string} itemName - pageItem 的名稱
  * @returns {fillColor} - 填色的顏色
@@ -1555,49 +1551,41 @@ function getFillColorFromPageItem(doc, itemName) {
     try {
         // 獲取指定名稱的 pageItem
         var pageItem = doc.pageItems.getByName(itemName);
-        
+
         // 檢查物件是否有填色
         if (pageItem.filled) {
            return pageItem.fillColor;
         }
 	}catch (e) {
         return "未找到名稱為 '" + itemName + "' 的物件或該物件無法獲取填色。";
-    }	
+    }
 }
 
+/**
+ * 找到 'clothes.csv' 則返回 file，否則返回 null
+ */
 
 pathEnvFile = checkForDataCsv();
 if(pathEnvFile === null){
 	exit();
 }
 
+
+
 var selectedValues;
 var selectFilePathText;
 showGui(pathEnvFile.fsName);
 
-
-//sourceFillDoc.close(SaveOptions.DONOTSAVECHANGES);
-//var doc = app.activeDocument;
-
-//alert(selectedValues.shirtType+" ,"+selectedValues.selectedSize+" , selectedValue = "+selectedValues.shirtFront);
-//alert(selectFilePathText);
-//0
-
-csvfilePath = getPath("data.csv");
-//csvfilePath = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/ai_script_workspace/ai_example/illustrator-scripts-master2/data.csv";
-
-myObject = readCsvToObj(new File(csvfilePath));
-
 app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
-var optRef = app.preferences.AutoCADFileOptions; 
-optRef.centerArtwork=true; 
-optRef.globalScaleOption=AutoCADGlobalScaleOption.ScaleByValue; 
-optRef.globalScalePercent=100.0; 
-optRef.mergeLayers=false; 
-optRef.scaleLineweights=false; 
-optRef.selectedLayoutName="Model"; 
-optRef.unit=AutoCADUnit.Millimeters; 
-optRef.unitScaleRatio=1; 
+var optRef = app.preferences.AutoCADFileOptions;
+optRef.centerArtwork=true;
+optRef.globalScaleOption=AutoCADGlobalScaleOption.ScaleByValue;
+optRef.globalScalePercent=100.0;
+optRef.mergeLayers=false;
+optRef.scaleLineweights=false;
+optRef.selectedLayoutName="Model";
+optRef.unit=AutoCADUnit.Millimeters;
+optRef.unitScaleRatio=1;
 
 var width_artwork = 2540;
 var height_artwork = 1350;
@@ -1606,401 +1594,20 @@ aiDocPreset.units = RulerUnits.Millimeters;
 aiDocPreset.width = mm(width_artwork);
 aiDocPreset.height = mm(height_artwork);
 aiDocPreset.rasterResolution = DocumentRasterResolution.HighResolution;
-aiDocPreset.title = myObject['名稱']+"_"+myObject['尺寸'];
+aiDocPreset.title = selectedValues.shirtType+"_"+selectedValues.selectedSize;
 aiDocPreset.colorMode = DocumentColorSpace.CMYK;
 
-var doc = app.documents.addDocument(myObject['名稱']+"_"+myObject['尺寸']+"_Preset", aiDocPreset);
+var doc = app.documents.addDocument(selectedValues.shirtType+"_"+selectedValues.selectedSize+"_Preset", aiDocPreset);
 
+//alert(selectedValues.shirtType);
 
-
-
-//樣版前片
-var mypath = getPath(selectedValues.shirtFront);
-
-//var mypath = "D:/開發/客戶圖檔/簡單K/套圖範本/所有版型/禾羽7扣/L/MM/L-P0811-前X2.dxf";
-var openDoc = app.open(File(mypath),DocumentColorSpace.CMYK);
-var layer =openDoc.layers['縫份'];
-var pageItem = layer.pageItems[0].pageItems[0];
-
-a = copyPageItem(pageItem);
-a.name = "左前";
-
-/*
-layer =openDoc.layers['針孔'];
-pageItem = layer.pageItems[0].pageItems[0];
-a_1 = copyPageItem(pageItem);
-a_1.name = "左前針孔";
-*/
-
-//參考線
-layer =openDoc.layers['參考線'];
-pageItem = layer.pageItems[0].pageItems[0];
-c = copyPageItem(pageItem);
-c.name = '中心線';
-
-//線寬度
-//粘扣
-layer =openDoc.layers['粘扣'];
-pageItem = layer.pageItems[0].pageItems[0];
-p_1 = copyPageItem(pageItem);
-p_1.name = "左前線1";
-p_1.strokeWidth = myObject['線寬度'];  // 笔画宽度为 10 点
-//p_1.fillColor = lineFillColor;
-
-pageItem = layer.pageItems[1].pageItems[0];
-p_2 = copyPageItem(pageItem);
-p_2.name = "左前線2";
-p_2.strokeWidth = myObject['線寬度'];  // 笔画宽度为 10 点
-//p_2.fillColor = lineFillColor;
-
-
-//var mypath = "D:/開發/客戶圖檔/簡單K/套圖範本/所有版型/禾羽7扣/L/MM/L-P0811-袖X2.dxf
-mypath = getPath(selectedValues.shirtSleeve);
-
-openDoc2 = app.open(File(mypath),DocumentColorSpace.CMYK);
-
-layer =openDoc2.layers['縫份'];
-pageItem = getItemByPlusMinus(layer,true);
-
-e = copyPageItem(pageItem);
-e.name = "左袖";
-//e.fillColor = sleeveFillColor;
-
-layer =openDoc2.layers['參考線'];
-pageItem = getItemByPlusMinus(layer,true);
-
-f = copyPageItem(pageItem);
-f.name = "左前線3"
-f.strokeWidth = myObject['線寬度'];  // 笔画宽度为 10 点
-//f.fillColor = lineFillColor;
-
-translationMatrix = moveToPoint(a,myObject['左前片點寬'],myObject['左前片點高'],e,myObject['左前袖點寬'],myObject['左前袖點高']);
-e.transform(translationMatrix);
-f.transform(translationMatrix);
-
-//旋轉
-list = [e,f];
-//這個用法
-//rotationAngle = getAngleDegreesByPt(p1,mm(myObject['左後袖旋轉半徑']),copy4_01,copy5_01,true,false);
-rotationPoint = getPoint(a,myObject['左前片點寬'],myObject['左前片點高']);
-angleDegrees(rotationPoint,myObject['左前袖旋轉半徑'],a,e,rotationDirection('前片交點狀態'),rotationDirection('前袖交點狀態'),list,rotationDirection('前袖旋轉方向'));
-
-
-//app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
-//mypath = "D:/開發/客戶圖檔/簡單K/套圖範本/所有版型/禾羽7扣/L/MM/L-P0811-後內貼1襯1.dxf";
-//mypath = getPath(selectedValues.background)
-
-mypath = getPath(selectedValues.shirtCollar);
-openDoc3 = app.open(File(mypath),DocumentColorSpace.CMYK);
-
-layer =openDoc3.layers['縫份'];
-pageItem = layer.pageItems[0].pageItems[0];
-g = copyPageItem(pageItem);
-g.name = "後內貼";
-//g.fillColor = backInnerCollarFillColor;
-
-layer =openDoc3.layers['尺寸線'];
-pageItem = layer.pageItems[0].pageItems[0];
-g2 = copyPageItem(pageItem);
-g2.name = "後內遮罩";
-//移動後內遮罩跟領子高度對齊
-translationMatrix = app.getTranslationMatrix(0,mm(myObject['領口遮罩移動高度']));
-g2.transform(translationMatrix);
-// 创建剪切遮罩
-var groupItem = doc.layers[0].groupItems.add();
-
-g2.move(groupItem, ElementPlacement.PLACEATEND);
-g.move(groupItem, ElementPlacement.PLACEATEND);
-groupItem.clipped = true;
-groupItem.name = "後領遮罩",
-groupList =["後領遮罩"];
-//移動領子高度跟右袖對齊
-moveTeamName("左袖","中心線","領子點高",groupList);
-
-mirror(c,a,"右前");
-mirror(c,e,"右袖");
-mirror(c,f,"右前線3");
-mirror(c,p_1,"右前線1");
-mirror(c,p_2,"右前線2");
-
-//todo
-mypath = getPath(selectedValues.background);
-openDoc6 = app.open(File(mypath),DocumentColorSpace.CMYK);
-layer =openDoc6.layers['縫份'];
-pageItem = layer.pageItems[0].pageItems[0];
-openDoc6_01 = copyPageItem(pageItem);
-openDoc6_01.name = "底";
-movePageItemByHeight("左前","中心線",0,"底");
-//movePageItemByHeight
-
-
-var buttonsList = [60,80,98,98,98,98,98];
-drawCircle("中心線",5,buttonsList);
-
-
-groupList = ["隊名","前數字"];
-//mypath = getMypath("樣版前面隊名");
-mypath = selectedValues.dxfLocation+"/前隊名.ai"
-//mypath = "D:/開發/客戶圖檔/簡單K/套圖範本/所有版型/禾羽7扣/L/MM/前隊名.ai";
-//alert(mypath);
-groupsCopy(doc,mypath,groupList);
-
-moveTeamName("左袖","中心線","隊名高度",groupList);
-
-//縮放模式 	比例
-if(myObject['縮放模式'] === "比例"){
-	//alert(myObject['縮放模式']);
-	//debug使用
-	boundaryBox = drawBoundingBoxForGroups(groupList,doc.layers[0]);
-	boundaryBox.name = "隊名邊框";
-	
-	scaleFactor = selectedValues.ChestWidthRatio;
-	var transformations = [Transformation.BOTTOM, Transformation.TOP]; // 對應的縮放中心點
-	scalePageItems(scaleFactor, groupList, transformations);    
-	moveTeamNameByScaleFactor("左袖","中心線","隊名高度",selectedValues.ChestHeightRatio,groupList);
+if( "棒球衣" === selectedValues.shirtType){
+#include "sixButtonBaseballJersey.jsx";
+  sixButtonBaseballJersey();
+}else if ("棒球衣2扣" === selectedValues.shirtType) {
+#include "twoButtonBaseballJersey.jsx";
+  twoButtonBaseballJersey();
 }
-
-
-doc.layers[0].name = "前示意圖";
-
-openDoc.close(SaveOptions.DONOTSAVECHANGES);
-openDoc2.close(SaveOptions.DONOTSAVECHANGES);
-openDoc3.close(SaveOptions.DONOTSAVECHANGES);
-openDoc6.close(SaveOptions.DONOTSAVECHANGES);
-
-var lrmargin = mm(50);
-//todo
-//movePageItem("前示意圖",-600);
-alignObjectsToLeftMargin("前示意圖",lrmargin,0);
-
-
-
-
-var backLayer = doc.layers.add();
-backLayer.name = "後示意圖";
-
-
-//app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
-//樣版後片
-//mypath = "D:/開發/客戶圖檔/簡單K/套圖範本/所有版型/禾羽7扣/L/MM/L-P0811-後X1.dxf";
-mypath = getPath(selectedValues.shirtBack);
-
-openDoc4 = app.open(File(mypath),DocumentColorSpace.CMYK);
-layer =openDoc4.layers['縫份'];
-pageItem = layer.pageItems[0].pageItems[0];
-copy4_01 = copyPageItem(pageItem);
-copy4_01.name = "後片";
-
-layer =openDoc4.layers['參考線'];
-pageItem = layer.pageItems[0].pageItems[0];
-copy4_02 = copyPageItem(pageItem);
-copy4_02.name = "後領線";
-
-
-//myObject['隊名高度']	
-app.activeDocument = doc;
-//app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
-
-mypath = getPath(selectedValues.shirtSleeve);
-openDoc5 = app.open(File(mypath),DocumentColorSpace.CMYK);
-
-layer =openDoc5.layers['縫份'];
-//得到下袖片縫份
-pageItem = getItemByPlusMinus(layer,false);
-copy5_01 = copyPageItem(pageItem);
-copy5_01.name = "左後袖";
-
-
-layer =openDoc5.layers['參考線'];
-//得到下袖片參考線
-pageItem = getItemByPlusMinus(layer,false);
-
-copy5_02 = copyPageItem(pageItem);
-copy5_02.name = "左後袖線";
-
-translationMatrix = moveToPoint(copy4_01,myObject['左後片點寬'],myObject['左後片點高'],copy5_01,myObject['左後袖點寬'],myObject['左後袖點高']);
-copy5_01.transform(translationMatrix);
-copy5_02.transform(translationMatrix);
-
-
-//旋轉
-list = [copy5_01,copy5_02];
-//這個用法  
-//rotationAngle = getAngleDegreesByPt(p1,mm(myObject['左後袖旋轉半徑']),copy4_01,copy5_01,true,false);
-rotationPoint = getPoint(copy4_01,myObject['左後片點寬'],myObject['左後片點高']);
-
-angleDegrees(rotationPoint,myObject['左後袖旋轉半徑'],copy4_01,copy5_01,rotationDirection('後片交點狀態'),rotationDirection('後袖交點狀態'),list,rotationDirection('後袖旋轉方向'));
-
-
-//w = copy4_01.width - mm(myObject['左後片點寬']*2)+copy5_01.width;
-w = getMirrorWidth(copy4_01,copy5_01);
-mirrorByPt(copy5_01,"右後袖",w);
-w = getMirrorWidth(copy4_01,copy5_02);
-mirrorByPt(copy5_02,"右後袖線",w);
-
-//movePageItem("後示意圖",300);
-
-groupList = ["姓名","後背號"];
-
-//mypath = "D:/開發/客戶圖檔/簡單K/套圖範本/所有版型/禾羽7扣/L/MM/後姓名.ai";
-mypath = selectedValues.dxfLocation+"/後姓名.ai"
-//mypath = getMypath("樣版後背姓名");
-
-//樣版後背姓名
-groupsCopy(doc,mypath,groupList);
-//姓名高度
-
-
-/**
- * 移動文字到指定高度左右置中
- * "左後袖" -> topName ： 最高裁片名稱 "左袖"
- * "後片" -> centerName : 置中裁片名稱 "中心線"
- * "姓名高度" -> heightName ： 高度距離 mm,從csv檔案取得 "姓名高度"
- * groupList : 移動的所有名稱 ["隊名","前數字"]
- */
-
-
-moveTeamName("左後袖","後片","姓名高度",groupList);
-
-if(myObject['縮放模式'] === "比例"){
-	//alert(myObject['縮放模式']);
-	//debug使用
-	boundaryBox = drawBoundingBoxForGroups(groupList,doc.layers[0]);
-	boundaryBox.name = "姓名邊框";
-	
-	scaleFactor = selectedValues.ChestWidthRatio;
-	var transformations = [Transformation.BOTTOM,Transformation.TOP]; // 對應的縮放中心點
-	scalePageItems(scaleFactor, groupList, transformations);    
-	moveTeamNameByScaleFactor("左後袖","後片","姓名高度",selectedValues.ChestHeightRatio,groupList);
-}
-
-
-left = lrmargin;
-t1 = getPathItemByName("左袖").geometricBounds[1];
-t2 = getPathItemByName("左後袖").geometricBounds[1];
-//drawBoundaryBox("後示意圖");
-
-//
-
-//movePageItemLT("後示意圖",left,t1-t2);
-alignObjectsToRightMargin("後示意圖",left,t1-t2);
-//drawLineAtDistanceFromRight(50);
-openDoc4.close(SaveOptions.DONOTSAVECHANGES);
-openDoc5.close(SaveOptions.DONOTSAVECHANGES);
-
-
-
-
-/*
-var outfitDesignLayer = doc.layers.add();
-outfitDesignLayer.name = "設計層";
-
-//mypath = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/ai_script_workspace/ai_example/illustrator-scripts-master2/生日快樂_套版.ai";
-mypath = selectFilePathText;
-
-
-
-
-
-
-
-groupList = ["剪裁群組_底","隊名"];
-groupsCopy(doc,mypath,groupList);
-
-var tmpGroup = doc.groupItems.add();
-
-
-//for (var i = 0; i < allPageItems.length; i++) {
-for(var i = 0; i < groupList.length; i++){
-	getPageItemByName(groupList[i]).move(tmpGroup, ElementPlacement.PLACEATEND);
-}
-//var transformations = [Transformation.TOP,Transformation.TOP]; // 對應的縮放中心點
-scaleFactor = selectedValues.ChestWidthRatio;
-//scalePageItems(scaleFactor, groupList, transformations);
-scalePageItemByGroup(scaleFactor,tmpGroup,Transformation.TOP);
-// 將 "來源層" 中的 "物件A" 移動到 "目標層"，並在 "目標層" 中排列在 "物件B" 之後
-//movePageItemToLayerAfterItem("設計層", "隊名", "前示意圖", "中心線");
-// 解除群組：將群組內的物件移出
-
-while (tmpGroup.pageItems.length > 0) {
-	var item = tmpGroup.pageItems[0];
-	if(tmpGroup.pageItems[0].name === "剪裁群組_底"){
-		item.move(doc.layers.getByName("設計層"), ElementPlacement.PLACEATEND);  // 移回設計層 
-	}else{
-		item.move(doc.layers.getByName("前示意圖"), ElementPlacement.PLACEATEND);  // 移回設計層 
-		item.selected = false;
-	}
-}
-
-// 刪除群組
-tmpGroup.remove();
-
-var doc = app.activeDocument;
-
-
-
-
-
-myItem = getPageItemByNameInLayer(doc, "設計層", "底");
-var fillColor = myItem.fillColor;
-    
-alignReplaceAndSetFill("前示意圖", "設計層", "底");
-
-
-
-
-// 使用範例
-// 將 "來源層" 中的 "物件A" 向下移動 50 點
-//selectedValues.setVerticalGap
-movePageItemVertically("前示意圖", "底", myObject['套圖垂直距離']);
-
-
-
-releaseAndRemoveClippingMaskGroup("設計層","剪裁群組_底");
-removePageItem("設計層", "底");
-movePageItemToLayerAsFirst("前示意圖","底","設計層");
-createClippingMaskForLayerWithName("設計層","剪裁群組_底","底");
-
-
-// 將 "來源層" 中的 "物件A" 移動到 "目標層"，並在 "目標層" 中排列在 "物件B" 之後
-movePageItemToLayerAfterItem("設計層", "剪裁群組_底", "前示意圖", "中心線");
-
-//fillColor
-myItem = getPageItemByNameInLayer(doc, "前示意圖", "底");
-myItem.selected = true;
-myItem.fillColor=fillColor;
-//movePageItemByHeight("左前","中心線",0,"底");
-
-// 將 "來源層" 中的 "物件A" 移動並對齊到 "目標層" 中的 "物件B" 的左上角
-translatexy = alignPageItemToTopLeft("前示意圖","底", "剪裁群組_底", "前示意圖", "右前");
-
-getPageItemByNameInLayer(doc, "前示意圖", "隊名").translate(translatexy[0], translatexy[1]);
-//設計層
-
-*/
-
-
-
-var nameOrderList = [
-    '鈕扣0', '鈕扣1', '鈕扣2', '鈕扣3', '鈕扣4', '鈕扣5', '鈕扣6',
-    '隊名', '前數字', '右前線1', '右前線2', '右前線3',
-    '左前線1', '左前線2', '左前線3', '後領遮罩', '中心線',
-    '右前', '左前', '右袖', '左袖'
-];
-
-// 調用函數進行排序
-reorderPageItemsInLayer("前示意圖", nameOrderList);
-
-var nameOrderList = [
-    '後背號', '姓名', '右後袖線', '左後袖線', '後領線','後片', '右後袖',
-    '左後袖'
-];
-
-// 調用函數進行排序
-reorderPageItemsInLayer("後示意圖", nameOrderList);
-
-
-
 
 
 

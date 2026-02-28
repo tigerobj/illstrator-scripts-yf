@@ -1,8 +1,9 @@
 
 /**
- * 判斷當前目錄下是否存在名為 'data.csv' 的檔案
- * 
- * @returns {file} - 如果找到 'data.csv' 則返回 true，否則返回 false
+ * 判斷是有有環境變數名稱為CLOTH_TEMPLATE_CONFIG_PATH
+ * 如果沒有需要重設環境變數 CLOTH_TEMPLATE_CONFIG_PATH
+ * 有設定環境變數,判斷路徑下是否有clothes.csv檔案,回傳file
+ * @returns {file} - 找到 'clothes.csv' 則返回 file，否則返回 null
  */
 function checkForDataCsv() {
     var pathEnv = $.getenv('CLOTH_TEMPLATE_CONFIG_PATH');
@@ -11,8 +12,7 @@ function checkForDataCsv() {
 		alert("請設定環境變數 CLOTH_TEMPLATE_CONFIG_PATH");
 		return null;
 	}
-    // 使用範例：檢查當前工作目錄下是否有 'data.csv'
-	
+    // 使用範例：檢查當前工作目錄下是否有 'clothes.csv'
 	var file = new File(pathEnv + '/clothes.csv');
 	if (! file.exists) {
 	    alert(pathEnv + '/clothes.csv 檔案不存在！ ,請複製clothes.csv,再重新執行');
@@ -35,12 +35,12 @@ function getKeys(obj) {
 function showGui(filePath){
 
 	//csvfilePath = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/ai_script_workspace/ai_example/illustrator-scripts-master2/data.csv";
-	
+
 	// 指定 CSV 檔案路徑
 	//var filePath = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/ai_script_workspace/ai_example/illustrator-scripts-master2/clothes.csv";  // 修改為實際檔案路徑
 	var file = new File(filePath);
 	var clothesData = {};
-	
+
 	// 打開檔案進行讀取
 	if (file.open('r')) {
 	    file.readln(); // 讀取並忽略首行（標題行）
@@ -62,9 +62,9 @@ function showGui(filePath){
 	            ChestWidthRatio = parts[10].trim();
 	            ChestHeightRatio = parts[11].trim();
 	            clothTemplatePath = parts[12].trim();
-	            
+
 	            if (!clothesData[type]) {
-	                clothesData[type] = []; 
+	                clothesData[type] = [];
 	            }
 	            clothesData[type].push({
 					shirtType:type,
@@ -86,18 +86,18 @@ function showGui(filePath){
 	} else {
 	    alert('無法打開檔案: ' + filePath);
 	}
-	
+
 	// 創建對話框
 	var dialog = new Window('dialog', '選擇衣服及尺寸');
 	var mainGroup = dialog.add('group');
 	mainGroup.orientation = 'row';
-	
+
 	var leftPanel = mainGroup.add('panel', undefined, '衣服類型');
 	var radioButtons = {};
-	
+
 	var shirtTypes = getKeys(clothesData);
-	
-	
+
+
 	for (var i = 0; i < shirtTypes.length; i++) {
 	    var type = shirtTypes[i];
 	    var radioButton = leftPanel.add('radiobutton', undefined, type);
@@ -113,31 +113,30 @@ function showGui(filePath){
 	    	sizeList.selection = 0;
 	    };
 	}
-	
+
 	var rightPanel = mainGroup.add('panel', undefined, '尺寸');
 	var sizeList = rightPanel.add('listbox', undefined, undefined, {
 		multiselect: false,
 		numberOfColumns: 2,
 		showHeaders: true,
 		columnTitles: ['Description', 'ValueArray'],
-		columnWidths: [100, 0]	
+		columnWidths: [100, 0]
 	});
-	
+
 	if (shirtTypes.length > 0) {
 	    radioButtons[shirtTypes[0]].notify('onClick');
 	}
-	
-	
+
+
 	var okButton = dialog.add('button', undefined, '確定', {name: 'ok'});
-	
+
 	okButton.onClick = function() {
 	    selectedValues = sizeList.selection.value;
 	    // 可以添加更多的功能，如收集數據、驗證等
 	    dialog.close(); // 閉關對話框
 	};
-	
-	
+
+
 	dialog.add('button', undefined, '取消', {name: 'cancel'});
 	dialog.show();
 }
-
