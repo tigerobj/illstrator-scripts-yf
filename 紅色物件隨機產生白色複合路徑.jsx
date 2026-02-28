@@ -22,17 +22,50 @@
     var white = createWhiteColor(doc);
     var layer = doc.activeLayer;
     var compounds = [];
+    var shapeStore = loadShapeStore();
+    var recordFile = getRecordFile();
 
     for (var run = 0; run < batchCount; run++) {
         var generated = layer.groupItems.add();
         generated.name = "數學方程式白色X圖_" + timeStamp() + "_" + (run + 1);
 
-        // 每次都隨機一組參數（不顯示輸入框）
-        var minCell = randomInt(1, 3);
-        var maxCell = randomInt(Math.max(2, minCell + 1), 6);
-        var spacingFactor = randomRange(1.35, 1.9);
-        var spreadFactor = randomRange(4.0, 7.2);
-        var jitter = randomRange(0.0, 0.03);
+        // 每次都隨機一組參數（不顯示輸入框），且避免與記錄檔中已出現的形狀重複
+        var spacingFactor;
+        var spreadFactor;
+        var jitter;
+        var radius;
+        var eqType;
+        var occupied;
+        var shapeKey;
+        var foundUnique = false;
+
+        for (var attempt = 0; attempt < 80; attempt++) {
+            var minCell = randomInt(1, 3);
+            var maxCell = randomInt(Math.max(2, minCell + 1), 6);
+            spacingFactor = randomRange(1.35, 1.9);
+            spreadFactor = randomRange(4.0, 7.2);
+            jitter = randomRange(0.0, 0.03);
+
+            radius = randomInt(minCell, maxCell);
+            eqType = randomInt(0, 6);
+            occupied = equationCells(eqType, radius);
+            occupied = removeIsolatedCells(occupied, 1);
+            occupied = closeGaps(occupied, radius + 1, 5);
+            occupied = removeIsolatedCells(occupied, 1);
+            occupied = clampCellsInRadius(occupied, radius + 1);
+
+            shapeKey = buildShapeKey(eqType, radius, occupied);
+            if (!shapeStore[shapeKey]) {
+                shapeStore[shapeKey] = true;
+                appendShapeKey(recordFile, shapeKey);
+                foundUnique = true;
+                break;
+            }
+        }
+
+        if (!foundUnique) {
+            continue;
+        }
 
         var sourceW = Math.max(1, sourceBounds[2] - sourceBounds[0]);
         var sourceH = Math.max(1, sourceBounds[1] - sourceBounds[3]);
@@ -40,14 +73,6 @@
         var stepY = sourceH * spacingFactor;
 
         var centers = generateCenters(1, sourceBounds, stepX * spreadFactor, stepY * spreadFactor);
-
-        var radius = randomInt(minCell, maxCell);
-        var eqType = randomInt(0, 6);
-        var occupied = equationCells(eqType, radius);
-        occupied = removeIsolatedCells(occupied, 1);
-        occupied = closeGaps(occupied, radius + 1, 5);
-        occupied = removeIsolatedCells(occupied, 1);
-        occupied = clampCellsInRadius(occupied, radius + 1);
 
         for (var k = 0; k < occupied.length; k++) {
             var cell = occupied[k];
@@ -85,7 +110,7 @@
     for (var c = 0; c < compounds.length; c++) {
         compounds[c].selected = true;
     }
-    alert("完成：已自動執行 20 次，每次輸出 1 個複合路徑。\n實際產生：" + compounds.length + " 個物件。");
+    alert("完成：已自動執行 20 次，每次輸出 1 個複合路徑。\n實際產生：" + compounds.length + " 個物件。\n形狀記錄檔：" + recordFile.fsName);
 
     function findFirstDrawable(selection) {
         for (var i = 0; i < selection.length; i++) {
@@ -304,6 +329,61 @@
                 collectPathItems(item.pageItems[j], output);
             }
         }
+    }
+
+    function getRecordFile() {
+        return File(Folder.myDocuments + "/ai_white_x_shape_log.txt");
+    }
+
+    function loadShapeStore() {
+        var store = {};
+        var f = getRecordFile();
+        if (!f.exists) {
+            return store;
+        }
+
+        if (!f.open("r")) {
+            return store;
+        }
+
+        while (!f.eof) {
+            var line = f.readln();
+            if (line && line.length > 0) {
+                store[line] = true;
+            }
+        }
+        f.close();
+        return store;
+    }
+
+    function appendShapeKey(fileRef, key) {
+        if (!fileRef.open("a")) {
+            return;
+        }
+        fileRef.writeln(key);
+        fileRef.close();
+    }
+
+    function buildShapeKey(eqType, radius, cells) {
+        var normalized = [];
+        for (var i = 0; i < cells.length; i++) {
+            normalized.push(cells[i][0] + "," + cells[i][1]);
+        }
+        normalized.sort();
+        var raw = eqType + "|" + radius + "|" + normalized.join(";");
+        return "v1|" + hashString(raw);
+    }
+
+    function hashString(str) {
+        var h = 2166136261;
+        for (var i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        }
+        if (h < 0) {
+            h = 0xFFFFFFFF + h + 1;
+        }
+        return h.toString(16);
     }
 
     function randomRange(min, max) {
