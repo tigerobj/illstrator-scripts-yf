@@ -13,7 +13,7 @@ function log (input) {
 	//alert(app.activeDocument.filePath);
     //var logFile = File(app.activeDocument.filePath + "/log.txt");
     var logFile = File(filePath + "/新圓領-產生.txt");
-	logFile.encoding = "utf8";
+    logFile.encoding = "utf8";
     logFile.open("a");
     //alert(now.toTimeString() + ": " + output);
     logFile.writeln(now.toTimeString() + ": " + output);
@@ -123,7 +123,6 @@ function readCsvToObj(csvFile){
 	}
 	return obj;
 	csvFile.close();
-
 }
 
 /**
@@ -338,18 +337,42 @@ function isEmptyString(str) {
     return str == null || str === "";
 }
 
+//取資料夾路徑
+function getFolderPath(fullFilePath) {
+  // 將所有反斜線 \ 替換為正斜線 /
+  var normalizedPath = fullFilePath.replace(/\\/g, '/');
+  // 找出最後一個斜線的位置
+  var lastSlashIndex = normalizedPath.lastIndexOf('/');
+  // 提取資料夾路徑
+  return normalizedPath.substring(0, lastSlashIndex + 1);
+}
 
-pathName = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/阿庚訂單/114/03/18/宏川/宏川新竹青商練習衣追加資料/L-data.csv";
-var csvFile = new File(pathName);
+function getSize(name){
+    return name.split('-')[0];
+}
+
+function isNull(obj){
+    return obj == null;
+}
+
 var doc = app.activeDocument;
+
+size = getSize(doc.name);
+
+pathName = getFolderPath(doc.fullName.fsName)+size+"-data.csv";
+// pathName = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/阿庚訂單/114/03/18/宏川/宏川新竹青商練習衣追加資料/L-data.csv";
+var csvFile = new File(pathName);
+var data = readCsvToObj(csvFile);
+
 list = ["右袖文字","左袖文字","前胸logo","前左胸logo","前右胸logo","前小號","大背號","姓名","客人logo"];
 
-var cPathName = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/阿庚訂單/114/03/18/宏川/宏川新竹青商練習衣追加資料/L-套版.eps";
+data["套版"]
+var cPathName = getFolderPath(doc.fullName.fsName)+data["套版"];
+// var cPathName = "D:/開發/客戶圖檔/杰優、裕豐工廠產品/阿庚訂單/114/03/18/宏川/宏川新竹青商練習衣追加資料/L-套版.eps";
 pageItemsCopy(doc,cPathName,list);
 
 
 
-var data = readCsvToObj(csvFile);
 
 clothName = data["姓名"];
 number = data["號碼"];
