@@ -266,18 +266,22 @@ function createAlignedText(groupAName, targetGroupName, textContent, fontName, f
 
 
 
-
-vFile = checkForDataCsv();
-sFilse = checkSizeFile();
-vData = new Object();
 clothes_size = "";
+var allPageItems = [];
+vFile = checkForDataCsv();
+//sFilse = checkSizeFile();
+vData = new Object();
 
 // 打開檔案進行讀取
 if (vFile.open('r')) {
     vFile.readln(); // 讀取並忽略首行（標題行）
     while (!vFile.eof) {
         var line = vFile.readln();
+        // var parts = line.split(';');
         var parts = line.split(';');
+        if(parts.length == 1){
+          parts = line.split(',');
+        }
         var size = parts[0].trim();
         var FrontPlacketCover = parts[1].trim();
         var backUpperCollarCover = parts[2].trim();
@@ -292,6 +296,7 @@ if (vFile.open('r')) {
             leftSleeve: leftSleeve,
             rightSleeve: rightSleeve,
             collar: collar};
+        allPageItems.push(size);
     }
     vFile.close(); // 關閉檔案
 } else {
@@ -299,14 +304,81 @@ if (vFile.open('r')) {
 }
 
 // 打開檔案進行讀取
-if (sFilse.open('r')) {
-    line = sFilse.readln(); // 讀取並忽略首行（標題行）
-    var parts = line.split(';');
-    clothes_size = parts[0].trim();
-    sFilse.close(); // 關閉檔案
-} else {
-    alert('無法打開檔案: ' + filePath);
+// if (sFilse.open('r')) {
+//     line = sFilse.readln(); // 讀取並忽略首行（標題行）
+//     var parts = line.split(';');
+//     clothes_size = parts[0].trim();
+//     sFilse.close(); // 關閉檔案
+// } else {
+//     alert('無法打開檔案: ' + filePath);
+// }
+
+
+showGui();
+
+
+//要先有 allPageItems 作為radioButtons的顯示資料
+//clothes_size是按鈕按下所選的radioButton的值
+
+function showGui() {
+    //cutPieceGroups = getCutPieceGroups();
+    // 創建對話框
+    var dialog = new Window('dialog', '尺寸選擇');
+
+    // 獲取螢幕尺寸
+    var screenWidth = Screen.width;
+    //var screenHeight = Screen.height;
+    // 設置對話框的邊界，讓其佔據螢幕的大部分
+    //dialog.bounds = [0, 0, screenWidth * 0.9, screenHeight * 0.9];
+    // 設置對話框的佈局屬性
+    dialog.orientation = 'column';
+    dialog.alignChildren = ['fill', 'top'];
+    //dialog.maximumSize.width = 1024;
+
+    // 創建主組件
+    var mainGroup = dialog.add('group');
+    mainGroup.orientation = 'row';
+    mainGroup.alignChildren = ['fill', 'fill'];
+
+    //裁切中的裁片內容
+    var contentPanel = mainGroup.add('panel', undefined, '尺寸選擇');
+    contentPanel.orientation = 'column';
+    contentPanel.alignChildren = ['fill', 'fill'];
+
+
+    // 添加按鈕組
+    var buttonGroup = mainGroup.add('panel', undefined, '確定選擇尺寸');
+    buttonGroup.orientation = 'row';
+    buttonGroup.alignment = ['center', 'bottom'];
+
+    var okButton = buttonGroup.add('button', undefined, '確定', { name: 'ok' });
+    var cancelButton = buttonGroup.add('button', undefined, '取消', { name: 'cancel' });
+    var radioButtons = [];
+    okButton.onClick = function() {
+      //alert("okButton.onClick");
+      for(var i=0;i<radioButtons.length;i++){
+        if(radioButtons[i].value){
+          clothes_size = radioButtons[i].text;
+        }
+      }
+      dialog.close();
+    }
+
+    cancelButton.onClick = function() {
+      dialog.close();
+    };
+
+    // 用於存儲尺寸的 checkbox 參考
+    for (var i = 0; i < allPageItems.length; i++) {
+        var radioButton = contentPanel.add('radiobutton', undefined, allPageItems[i]);
+        //var checkboxButton = contentPanel.add('checkbox', undefined, allPageItems[i].name);
+        radioButtons.push(radioButton);
+    }
+    dialog.layout.layout(true);
+    dialog.show();
 }
+
+
 
 var doc = app.activeDocument;
 
