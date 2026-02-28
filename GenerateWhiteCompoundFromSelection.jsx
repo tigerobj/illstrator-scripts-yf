@@ -16,22 +16,22 @@
         return;
     }
 
-    var motifCount = askInt("要產生幾個白色圖案（群組）？", 20, 1, 300);
+    var motifCount = askInt("要產生幾個白色圖案（群組）？", 22, 1, 300);
     if (motifCount === null) return;
 
-    var minCell = askInt("每個圖案最小半徑（格數）", 3, 2, 20);
+    var minCell = askInt("每個圖案最小半徑（格數）", 2, 1, 20);
     if (minCell === null) return;
 
-    var maxCell = askInt("每個圖案最大半徑（格數）", 7, minCell, 30);
+    var maxCell = askInt("每個圖案最大半徑（格數）", 5, minCell, 30);
     if (maxCell === null) return;
 
-    var spacingFactor = askFloat("X 之間間距倍率（建議 1.3 ~ 2.2）", 1.7, 1.05, 4.0);
+    var spacingFactor = askFloat("X 之間間距倍率（建議 1.3 ~ 2.2）", 1.55, 1.05, 4.0);
     if (spacingFactor === null) return;
 
-    var spreadFactor = askFloat("圖案中心分散倍率（建議 4.0 ~ 8.0）", 5.4, 1.0, 20.0);
+    var spreadFactor = askFloat("圖案中心分散倍率（建議 4.0 ~ 8.0）", 4.8, 1.0, 20.0);
     if (spreadFactor === null) return;
 
-    var jitter = askFloat("每個 X 的抖動比例（0~0.4）", 0.08, 0, 0.4);
+    var jitter = askFloat("每個 X 的抖動比例（0~0.4）", 0.05, 0, 0.4);
     if (jitter === null) return;
 
     var sourceBounds = source.visibleBounds;
@@ -49,8 +49,10 @@
 
     for (var i = 0; i < motifCount; i++) {
         var radius = randomInt(minCell, maxCell);
-        var eqType = randomInt(0, 4);
+        var eqType = randomInt(0, 6);
         var occupied = equationCells(eqType, radius);
+        occupied = thinCells(occupied, randomRange(0.70, 0.9));
+        occupied = occupied.concat(makeTrailCells(radius));
 
         for (var k = 0; k < occupied.length; k++) {
             var cell = occupied[k];
@@ -124,52 +126,83 @@
 
         for (var y = -r; y <= r; y++) {
             for (var x = -r; x <= r; x++) {
-                var nx = x / r;
-                var ny = y / r;
+                var ax = Math.abs(x);
+                var ay = Math.abs(y);
                 var d2 = x * x + y * y;
-                var on = false;
+                var t = false;
 
                 if (type === 0) {
-                    // superellipse + 十字骨架
-                    var q = Math.pow(Math.abs(nx), 1.6) + Math.pow(Math.abs(ny), 1.6);
-                    on = (q <= 1.0 && q >= 0.2) || (Math.abs(x) <= 1 || Math.abs(y) <= 1);
+                    // 菱形邊框 + 中心十字（像你範例的雪花菱形）
+                    var man = ax + ay;
+                    t = (Math.abs(man - r) <= 1) || (ax <= 1 && ay <= r - 1) || (ay <= 1 && ax <= r - 1);
                 } else if (type === 1) {
-                    // diamond ring: |x|+|y|
-                    var man = Math.abs(x) + Math.abs(y);
-                    on = (man <= r && man >= Math.floor(r * 0.35)) || (Math.abs(x) <= 1 || Math.abs(y) <= 1);
+                    // 圓環 + 4 向小突起
+                    t = (d2 <= rr && d2 >= Math.max(1, rr * 0.46));
+                    if ((ax <= 1 && ay <= r + 1) || (ay <= 1 && ax <= r + 1)) t = true;
                 } else if (type === 2) {
-                    // 4-petal rose style (polar approximation)
-                    var theta = Math.atan2(y, x);
-                    var rad = Math.sqrt(d2) / r;
-                    var rose = 0.58 + 0.32 * Math.cos(4 * theta);
-                    on = rad <= rose && rad >= rose * 0.42;
+                    // 4 petals（窄帶）
+                    var th = Math.atan2(y, x);
+                    var rad = Math.sqrt(d2) / Math.max(1, r);
+                    var rose = 0.56 + 0.33 * Math.cos(4 * th);
+                    t = rad <= rose && rad >= rose * 0.72;
                 } else if (type === 3) {
-                    // lemniscate-like lobes
-                    var t = nx * nx + ny * ny;
-                    var f = (t * t) - (nx * nx - ny * ny);
-                    on = f <= 0.18 && t <= 1.2 && t >= 0.08;
+                    // 八角星骨架
+                    t = (ax <= 1 || ay <= 1 || Math.abs(ax - ay) <= 1) && Math.max(ax, ay) <= r;
+                    t = t && (d2 >= Math.max(1, rr * 0.06));
+                } else if (type === 4) {
+                    // 小愛心方程（只取邊界帶）
+                    var nx = x / Math.max(1, r);
+                    var ny = y / Math.max(1, r);
+                    var heart = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny;
+                    t = heart <= 0.18 && heart >= -0.32;
+                } else if (type === 5) {
+                    // 十字菱形混合（比較像你想要的小群組）
+                    var m = Math.max(ax, ay);
+                    t = (m <= r && m >= Math.max(1, r - 2) && ((x + y) % 2 === 0)) ||
+                        ((ax <= 1 || ay <= 1) && m <= r);
                 } else {
-                    // circle ring + axis spikes
-                    on = d2 <= rr && d2 >= rr * 0.23;
-                    if (Math.abs(x) <= 1 || Math.abs(y) <= 1) {
-                        on = d2 <= rr * 1.05;
-                    }
+                    // 小型密排菱形
+                    var md = ax + ay;
+                    t = md <= r && ((x + y) % 2 === 0);
+                    if (md <= 1) t = true;
                 }
 
-                if (on) {
+                if (t) {
                     cells.push([x, y]);
                 }
             }
         }
 
-        // 稀疏化讓圖形更像範例的點陣 X 組成感
-        var reduced = [];
+        return cells;
+    }
+
+    function thinCells(cells, keepRatio) {
+        var out = [];
         for (var i = 0; i < cells.length; i++) {
-            if (Math.random() > 0.08) {
-                reduced.push(cells[i]);
+            if (Math.random() <= keepRatio) {
+                out.push(cells[i]);
             }
         }
-        return reduced;
+        return out;
+    }
+
+    function makeTrailCells(r) {
+        var trail = [];
+        var count = randomInt(0, 3);
+        if (count === 0) return trail;
+
+        var vx = randomInt(-2, 2);
+        var vy = randomInt(-2, 2);
+        if (vx === 0 && vy === 0) vx = 1;
+
+        var sx = randomInt(r + 1, r + 3) * (vx >= 0 ? 1 : -1);
+        var sy = randomInt(r + 1, r + 3) * (vy >= 0 ? 1 : -1);
+
+        for (var i = 0; i < count; i++) {
+            trail.push([sx + vx * i * 2, sy + vy * i * 2]);
+        }
+
+        return trail;
     }
 
     function generateCenters(count, srcBounds, spreadX, spreadY) {
