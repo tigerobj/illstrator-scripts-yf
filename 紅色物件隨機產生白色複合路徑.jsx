@@ -51,8 +51,9 @@
         var radius = randomInt(minCell, maxCell);
         var eqType = randomInt(0, 6);
         var occupied = equationCells(eqType, radius);
-        occupied = thinCells(occupied, randomRange(0.70, 0.9));
-        occupied = occupied.concat(makeTrailCells(radius));
+        occupied = thinCells(occupied, randomRange(0.74, 0.92));
+        occupied = removeIsolatedCells(occupied, 1);
+        occupied = clampCellsInRadius(occupied, radius + 1);
 
         for (var k = 0; k < occupied.length; k++) {
             var cell = occupied[k];
@@ -186,23 +187,42 @@
         return out;
     }
 
-    function makeTrailCells(r) {
-        var trail = [];
-        var count = randomInt(0, 3);
-        if (count === 0) return trail;
-
-        var vx = randomInt(-2, 2);
-        var vy = randomInt(-2, 2);
-        if (vx === 0 && vy === 0) vx = 1;
-
-        var sx = randomInt(r + 1, r + 3) * (vx >= 0 ? 1 : -1);
-        var sy = randomInt(r + 1, r + 3) * (vy >= 0 ? 1 : -1);
-
-        for (var i = 0; i < count; i++) {
-            trail.push([sx + vx * i * 2, sy + vy * i * 2]);
+    function removeIsolatedCells(cells, minNeighbors) {
+        var map = {};
+        var i;
+        for (i = 0; i < cells.length; i++) {
+            map[cells[i][0] + "," + cells[i][1]] = true;
         }
 
-        return trail;
+        var kept = [];
+        for (i = 0; i < cells.length; i++) {
+            var x = cells[i][0];
+            var y = cells[i][1];
+            var n = 0;
+            for (var dx = -1; dx <= 1; dx++) {
+                for (var dy = -1; dy <= 1; dy++) {
+                    if (dx === 0 && dy === 0) continue;
+                    if (map[(x + dx) + "," + (y + dy)]) n++;
+                }
+            }
+            if (n >= minNeighbors) {
+                kept.push(cells[i]);
+            }
+        }
+        return kept;
+    }
+
+    function clampCellsInRadius(cells, maxRadius) {
+        var out = [];
+        var r2 = maxRadius * maxRadius;
+        for (var i = 0; i < cells.length; i++) {
+            var x = cells[i][0];
+            var y = cells[i][1];
+            if (x * x + y * y <= r2) {
+                out.push(cells[i]);
+            }
+        }
+        return out;
     }
 
     function generateCenters(count, srcBounds, spreadX, spreadY) {
