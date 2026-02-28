@@ -16,38 +16,29 @@
         return;
     }
 
-    var motifCount = askInt("要產生幾個白色圖案（群組）？", 22, 1, 300);
-    if (motifCount === null) return;
-
-    var minCell = askInt("每個圖案最小半徑（格數）", 2, 1, 20);
-    if (minCell === null) return;
-
-    var maxCell = askInt("每個圖案最大半徑（格數）", 5, minCell, 30);
-    if (maxCell === null) return;
-
-    var spacingFactor = askFloat("X 之間間距倍率（建議 1.3 ~ 2.2）", 1.55, 1.05, 4.0);
-    if (spacingFactor === null) return;
-
-    var spreadFactor = askFloat("圖案中心分散倍率（建議 4.0 ~ 8.0）", 4.8, 1.0, 20.0);
-    if (spreadFactor === null) return;
-
-    var jitter = askFloat("每個 X 的抖動比例（0~0.4）", 0.02, 0, 0.4);
-    if (jitter === null) return;
+    var batchCount = 20; // 固定執行 20 次
 
     var sourceBounds = source.visibleBounds;
-    var sourceW = Math.max(1, sourceBounds[2] - sourceBounds[0]);
-    var sourceH = Math.max(1, sourceBounds[1] - sourceBounds[3]);
-    var stepX = sourceW * spacingFactor;
-    var stepY = sourceH * spacingFactor;
-
     var white = createWhiteColor(doc);
     var layer = doc.activeLayer;
     var generated = layer.groupItems.add();
     generated.name = "數學方程式白色X圖_" + timeStamp();
 
-    var centers = generateCenters(motifCount, sourceBounds, stepX * spreadFactor, stepY * spreadFactor);
+    for (var run = 0; run < batchCount; run++) {
+        // 每次都隨機一組參數（不顯示輸入框）
+        var minCell = randomInt(1, 3);
+        var maxCell = randomInt(Math.max(2, minCell + 1), 6);
+        var spacingFactor = randomRange(1.35, 1.9);
+        var spreadFactor = randomRange(4.0, 7.2);
+        var jitter = randomRange(0.0, 0.03);
 
-    for (var i = 0; i < motifCount; i++) {
+        var sourceW = Math.max(1, sourceBounds[2] - sourceBounds[0]);
+        var sourceH = Math.max(1, sourceBounds[1] - sourceBounds[3]);
+        var stepX = sourceW * spacingFactor;
+        var stepY = sourceH * spacingFactor;
+
+        var centers = generateCenters(1, sourceBounds, stepX * spreadFactor, stepY * spreadFactor);
+
         var radius = randomInt(minCell, maxCell);
         var eqType = randomInt(0, 6);
         var occupied = equationCells(eqType, radius);
@@ -58,12 +49,11 @@
 
         for (var k = 0; k < occupied.length; k++) {
             var cell = occupied[k];
-            var cx = centers[i][0] + cell[0] * stepX + randomRange(-stepX * jitter, stepX * jitter);
-            var cy = centers[i][1] + cell[1] * stepY + randomRange(-stepY * jitter, stepY * jitter);
+            var cx = centers[0][0] + cell[0] * stepX + randomRange(-stepX * jitter, stepX * jitter);
+            var cy = centers[0][1] + cell[1] * stepY + randomRange(-stepY * jitter, stepY * jitter);
 
             var dup = source.duplicate(generated, ElementPlacement.PLACEATEND);
             recolorToWhite(dup, white);
-
             placeItemCenter(dup, cx, cy);
         }
     }
@@ -88,29 +78,7 @@
 
     doc.selection = null;
     compound.selected = true;
-    alert("完成：已用數學方程式生成白色 X 圖案並建立複合路徑。\n圖案數量：" + motifCount);
-
-    function askInt(msg, def, min, max) {
-        var raw = prompt(msg, String(def));
-        if (raw === null) return null;
-        var v = parseInt(raw, 10);
-        if (isNaN(v) || v < min || v > max) {
-            alert(msg + "\n請輸入介於 " + min + " 到 " + max + " 的整數。");
-            return null;
-        }
-        return v;
-    }
-
-    function askFloat(msg, def, min, max) {
-        var raw = prompt(msg, String(def));
-        if (raw === null) return null;
-        var v = parseFloat(raw);
-        if (isNaN(v) || v < min || v > max) {
-            alert(msg + "\n請輸入介於 " + min + " 到 " + max + " 的數值。");
-            return null;
-        }
-        return v;
-    }
+    alert("完成：已自動執行 20 次（每次 1 個群組）並建立複合路徑。");
 
     function findFirstDrawable(selection) {
         for (var i = 0; i < selection.length; i++) {
@@ -134,36 +102,29 @@
                 var t = false;
 
                 if (type === 0) {
-                    // 菱形邊框 + 中心十字（像你範例的雪花菱形）
                     var man = ax + ay;
                     t = (Math.abs(man - r) <= 1) || (ax <= 1 && ay <= r - 1) || (ay <= 1 && ax <= r - 1);
                 } else if (type === 1) {
-                    // 圓環 + 4 向小突起
                     t = (d2 <= rr && d2 >= Math.max(1, rr * 0.46));
                     if ((ax <= 1 && ay <= r + 1) || (ay <= 1 && ax <= r + 1)) t = true;
                 } else if (type === 2) {
-                    // 4 petals（窄帶）
                     var th = Math.atan2(y, x);
                     var rad = Math.sqrt(d2) / Math.max(1, r);
                     var rose = 0.56 + 0.33 * Math.cos(4 * th);
                     t = rad <= rose && rad >= rose * 0.72;
                 } else if (type === 3) {
-                    // 八角星骨架
                     t = (ax <= 1 || ay <= 1 || Math.abs(ax - ay) <= 1) && Math.max(ax, ay) <= r;
                     t = t && (d2 >= Math.max(1, rr * 0.06));
                 } else if (type === 4) {
-                    // 小愛心方程（只取邊界帶）
                     var nx = x / Math.max(1, r);
                     var ny = y / Math.max(1, r);
                     var heart = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny;
                     t = heart <= 0.18 && heart >= -0.32;
                 } else if (type === 5) {
-                    // 十字菱形混合（比較像你想要的小群組）
                     var m = Math.max(ax, ay);
                     t = (m <= r && m >= Math.max(1, r - 2) && ((x + y) % 2 === 0)) ||
                         ((ax <= 1 || ay <= 1) && m <= r);
                 } else {
-                    // 小型密排菱形
                     var md = ax + ay;
                     t = md <= r && ((x + y) % 2 === 0);
                     if (md <= 1) t = true;
