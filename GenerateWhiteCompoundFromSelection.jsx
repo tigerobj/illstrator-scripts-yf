@@ -21,10 +21,12 @@
     var sourceBounds = source.visibleBounds;
     var white = createWhiteColor(doc);
     var layer = doc.activeLayer;
-    var generated = layer.groupItems.add();
-    generated.name = "數學方程式白色X圖_" + timeStamp();
+    var compounds = [];
 
     for (var run = 0; run < batchCount; run++) {
+        var generated = layer.groupItems.add();
+        generated.name = "數學方程式白色X圖_" + timeStamp() + "_" + (run + 1);
+
         // 每次都隨機一組參數（不顯示輸入框）
         var minCell = randomInt(1, 3);
         var maxCell = randomInt(Math.max(2, minCell + 1), 6);
@@ -56,29 +58,34 @@
             recolorToWhite(dup, white);
             placeItemCenter(dup, cx, cy);
         }
+
+        var pathList = [];
+        collectPathItems(generated, pathList);
+        if (pathList.length >= 2) {
+            var compound = layer.compoundPathItems.add();
+            compound.name = generated.name + "_複合路徑";
+            for (var p = pathList.length - 1; p >= 0; p--) {
+                pathList[p].move(compound, ElementPlacement.PLACEATBEGINNING);
+            }
+            compounds.push(compound);
+        }
+
+        try {
+            generated.remove();
+        } catch (e) {
+        }
     }
 
-    var pathList = [];
-    collectPathItems(generated, pathList);
-    if (pathList.length < 2) {
+    if (compounds.length === 0) {
         alert("生成路徑不足，無法建立複合路徑。");
         return;
     }
 
-    var compound = layer.compoundPathItems.add();
-    compound.name = generated.name + "_複合路徑";
-    for (var p = pathList.length - 1; p >= 0; p--) {
-        pathList[p].move(compound, ElementPlacement.PLACEATBEGINNING);
-    }
-
-    try {
-        generated.remove();
-    } catch (e) {
-    }
-
     doc.selection = null;
-    compound.selected = true;
-    alert("完成：已自動執行 20 次（每次 1 個群組）並建立複合路徑。");
+    for (var c = 0; c < compounds.length; c++) {
+        compounds[c].selected = true;
+    }
+    alert("完成：已自動執行 20 次，每次輸出 1 個複合路徑。\n實際產生：" + compounds.length + " 個物件。");
 
     function findFirstDrawable(selection) {
         for (var i = 0; i < selection.length; i++) {
