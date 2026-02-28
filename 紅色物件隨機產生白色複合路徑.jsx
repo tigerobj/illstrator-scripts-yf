@@ -60,9 +60,6 @@
             var dup = source.duplicate(generated, ElementPlacement.PLACEATEND);
             recolorToWhite(dup, white);
 
-            var angle = randomInt(0, 7) * 45 + randomRange(-6, 6);
-            dup.rotate(angle, true, true, true, true, Transformation.CENTER);
-
             placeItemCenter(dup, cx, cy);
         }
     }
