@@ -38,7 +38,7 @@ function selectSameFillColor(groupItem,baseItem,changItem) {
             matchedItems.push(item);
             item.fillColor = changItem.fillColor;
           }else if (item.fillColor.typename === "GradientColor"){
-            alert("GradientColor");
+            // alert("GradientColor");
           }
 
         }else if (item.typename === "CompoundPathItem") {
@@ -185,7 +185,7 @@ function findPathItemByNamePart(doc,layerName,groupItemName,name) {
             return p[i];
         }
     }
-    alert("沒有 C_ 顏色區塊");
+    // alert("沒有 C_ 顏色區塊");
     return null;
 }
 

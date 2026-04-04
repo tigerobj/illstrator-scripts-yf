@@ -1,72 +1,225 @@
-// 在「裁切」圖層中，選取所有位於「記號線」群組內的物件。
-// 執行第一步會先清除整份文件目前的選取。
+if (app.documents.length === 0) {
+    alert("沒有開啟的文件。");
+} else {
+    try {
+        var doc = app.activeDocument;
+        deselectAll(doc);
 
-function clearDocumentSelection(doc) {
-    // 先清空 selection 陣列
-    doc.selection = null;
+        var cropLayer = findLayerByNameRecursive(doc, "裁切");
+        if (!cropLayer) {
+            throw new Error("找不到「裁切」圖層。");
+        }
 
-    // 再遍歷所有 pageItems，確保所有物件都取消選取
-    for (var i = 0; i < doc.pageItems.length; i++) {
-        doc.pageItems[i].selected = false;
+        var targetGroups = [];
+        collectGroupsByName(cropLayer, "記號線", targetGroups);
+        if (targetGroups.length === 0) {
+            throw new Error("在「裁切」圖層內找不到名稱為「記號線」的群組。");
+        }
+
+        var selectedItems = [];
+        for (var i = 0; i < targetGroups.length; i++) {
+            collectSelectableItems(targetGroups[i], selectedItems);
+        }
+
+        if (selectedItems.length === 0) {
+            throw new Error("有找到「記號線」群組，但裡面沒有可選取的物件。");
+        }
+
+        var choice = showStrokeColorDialog();
+        if (!choice) {
+            alert("已取消。保留目前選取結果，未變更筆畫顏色。");
+        } else {
+            var strokeColor = createRgbColor(choice);
+            var changedCount = applyStrokeColorToItems(selectedItems, strokeColor);
+
+            alert(
+                "已取消原本選取並完成記號線物件處理。\n" +
+                "找到記號線群組數：" + targetGroups.length + "\n" +
+                "選取物件數：" + selectedItems.length + "\n" +
+                "筆畫改為" + (choice === "white" ? "白色" : "黑色") + "的物件數：" + changedCount
+            );
+        }
+    } catch (error) {
+        alert("執行失敗：" + error.message);
     }
 }
 
-function findLayerByName(doc, layerName) {
-    for (var i = 0; i < doc.layers.length; i++) {
-        if (doc.layers[i].name === layerName) {
-            return doc.layers[i];
+function deselectAll(doc) {
+    try {
+        app.executeMenuCommand("deselectall");
+    } catch (e) {
+    }
+
+    try {
+        doc.selection = null;
+    } catch (e2) {
+    }
+
+    for (var i = 0; i < doc.pageItems.length; i++) {
+        try {
+            doc.pageItems[i].selected = false;
+        } catch (e3) {
         }
     }
+}
+
+function findLayerByNameRecursive(container, targetName) {
+    for (var i = 0; i < container.layers.length; i++) {
+        var layer = container.layers[i];
+        if (layer.name === targetName) {
+            return layer;
+        }
+
+        var nested = findLayerByNameRecursive(layer, targetName);
+        if (nested) {
+            return nested;
+        }
+    }
+
     return null;
 }
 
-function selectAllDescendants(container) {
+function collectGroupsByName(container, targetName, result) {
     var items = container.pageItems;
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
+        if (item.parent !== container || item.typename !== "GroupItem") {
+            continue;
+        }
 
-        // 跳過鎖定或隱藏物件
-        if (item.locked || item.hidden) {
+        if (isItemUnavailable(item)) {
+            continue;
+        }
+
+        if (item.name === targetName) {
+            result.push(item);
+        }
+
+        collectGroupsByName(item, targetName, result);
+    }
+}
+
+function collectSelectableItems(container, result) {
+    var items = container.pageItems;
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.parent !== container) {
+            continue;
+        }
+
+        if (isItemUnavailable(item)) {
+            continue;
+        }
+
+        if (item.typename === "GroupItem") {
+            collectSelectableItems(item, result);
             continue;
         }
 
         item.selected = true;
-
-        // 若是群組，繼續往下選取所有子物件
-        if (item.typename === "GroupItem") {
-            selectAllDescendants(item);
-        }
+        result.push(item);
     }
 }
 
-function findAndSelectNotchGroups(container) {
-    var pageItems = container.pageItems;
-
-    for (var i = 0; i < pageItems.length; i++) {
-        var item = pageItems[i];
-
-        // 找到名稱為「記號線」的群組時，選取其底下所有物件
-        if (item.typename === "GroupItem" && item.name === "記號線") {
-            selectAllDescendants(item);
-        }
-
-        // 持續遞迴搜尋整個圖層樹
-        if (item.typename === "GroupItem") {
-            findAndSelectNotchGroups(item);
-        }
-    }
+function isItemUnavailable(item) {
+    return item.locked || item.hidden;
 }
 
-var doc = app.activeDocument;
+function showStrokeColorDialog() {
+    var dialog = new Window("dialog", "記號線筆畫顏色");
+    dialog.orientation = "column";
+    dialog.alignChildren = ["fill", "top"];
 
-// 第一個步驟：先把文件內所有物件取消選取
-clearDocumentSelection(doc);
+    dialog.add("statictext", undefined, "請選擇要套用到選取物件的筆畫顏色：");
 
-var cropLayer = findLayerByName(doc, "裁切");
+    var optionGroup = dialog.add("panel", undefined, "顏色");
+    optionGroup.orientation = "column";
+    optionGroup.alignChildren = ["left", "top"];
 
-if (!cropLayer) {
-    alert("找不到圖層：裁切");
-} else {
-    findAndSelectNotchGroups(cropLayer);
-    alert("已選取圖層「裁切」中「記號線」群組內的所有物件。");
+    var whiteRadio = optionGroup.add("radiobutton", undefined, "白色");
+    var blackRadio = optionGroup.add("radiobutton", undefined, "黑色");
+    whiteRadio.value = true;
+
+    var buttonGroup = dialog.add("group");
+    buttonGroup.alignment = ["right", "center"];
+    var okButton = buttonGroup.add("button", undefined, "確定", {name: "ok"});
+    buttonGroup.add("button", undefined, "取消", {name: "cancel"});
+
+    okButton.onClick = function () {
+        dialog.close(1);
+    };
+
+    if (dialog.show() !== 1) {
+        return null;
+    }
+
+    return whiteRadio.value ? "white" : "black";
+}
+
+function createRgbColor(choice) {
+    var color = new RGBColor();
+    if (choice === "white") {
+        color.red = 255;
+        color.green = 255;
+        color.blue = 255;
+    } else {
+        color.red = 0;
+        color.green = 0;
+        color.blue = 0;
+    }
+    return color;
+}
+
+function applyStrokeColorToItems(items, strokeColor) {
+    var changedCount = 0;
+
+    for (var i = 0; i < items.length; i++) {
+        changedCount += applyStrokeColor(items[i], strokeColor);
+    }
+
+    return changedCount;
+}
+
+function applyStrokeColor(item, strokeColor) {
+    if (isItemUnavailable(item)) {
+        return 0;
+    }
+
+    if (item.typename === "CompoundPathItem") {
+        var compoundChanged = 0;
+        for (var i = 0; i < item.pathItems.length; i++) {
+            compoundChanged += setStrokeIfSupported(item.pathItems[i], strokeColor);
+        }
+        return compoundChanged;
+    }
+
+    if (item.typename === "TextFrame") {
+        var textChanged = 0;
+
+        try {
+            item.textRange.characterAttributes.strokeColor = strokeColor;
+            textChanged = 1;
+        } catch (e) {
+        }
+
+        try {
+            item.stroked = true;
+            item.strokeColor = strokeColor;
+        } catch (e2) {
+        }
+
+        return textChanged;
+    }
+
+    return setStrokeIfSupported(item, strokeColor);
+}
+
+function setStrokeIfSupported(item, strokeColor) {
+    try {
+        item.stroked = true;
+        item.strokeColor = strokeColor;
+        return 1;
+    } catch (e) {
+        return 0;
+    }
 }

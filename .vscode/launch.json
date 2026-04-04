@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "extendscript-debug",
+      "request": "launch",
+      "name": "套圖顏色流程",
+      "script": "${workspaceFolder}/run_color_flow.jsx",
+      "engineName": "main",
+      "bringToFront": true
+    },
+    {
+      "type": "extendscript-debug",
+      "request": "launch",
+      "name": "Launch in Illustrator (Open JSX File)",
+      "script": "${file}",
+      "engineName": "main",
+      "bringToFront": true
+    },
+    {
+      "type": "extendscript-debug",
+      "request": "attach",
+      "name": "Attach to Illustrator (Main Engine)",
+      "engineName": "main"
+    }
+  ]
+}
