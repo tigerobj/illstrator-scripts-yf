@@ -16,6 +16,10 @@ if (app.documents.length === 0) {
             throw new Error("在「裁切」圖層內找不到名稱為「記號線」的群組。");
         }
 
+        for (var j = 0; j < targetGroups.length; j++) {
+            moveItemToFirstPosition(targetGroups[j]);
+        }
+
         var selectedItems = [];
         for (var i = 0; i < targetGroups.length; i++) {
             collectSelectableItems(targetGroups[i], selectedItems);
@@ -119,6 +123,38 @@ function collectSelectableItems(container, result) {
         item.selected = true;
         result.push(item);
     }
+}
+
+function moveItemToFirstPosition(item) {
+    var parent = item.parent;
+    if (!parent || !parent.pageItems || parent.pageItems.length <= 1) {
+        return;
+    }
+
+    var firstSibling = getFirstSiblingInParent(parent, item);
+    if (!firstSibling) {
+        return;
+    }
+
+    try {
+        item.move(firstSibling, ElementPlacement.PLACEBEFORE);
+    } catch (e) {
+        try {
+            item.zOrder(ZOrderMethod.SENDTOBACK);
+        } catch (e2) {
+        }
+    }
+}
+
+function getFirstSiblingInParent(parent, currentItem) {
+    for (var i = 0; i < parent.pageItems.length; i++) {
+        var sibling = parent.pageItems[i];
+        if (sibling !== currentItem && sibling.parent === parent) {
+            return sibling;
+        }
+    }
+
+    return null;
 }
 
 function isItemUnavailable(item) {
