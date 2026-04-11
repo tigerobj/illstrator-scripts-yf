@@ -185,3 +185,14 @@
 22:33:11 GMT+0800: ["在圖層 '顏色位置' 中未找到名為 'p1' 的 pageItem。"]
 13:30:53 GMT+0800: ["前後片套圖流程：","前片"]
 13:30:53 GMT+0800: ["前後片套圖流程：","後片"]
+16:58:05 GMT+0800: "Finished 套圖-指定顏色.jsx"
+16:58:28 GMT+0800: "Finished 套圖-指定顏色.jsx"
+16:58:29 GMT+0800: "Finished 套圖-改變顏色.jsx"
+22:51:15 GMT+0800: "Finished 套圖-指定顏色.jsx"
+22:51:16 GMT+0800: "Finished 套圖-改變顏色.jsx"
+01:42:36 GMT+0800: "Finished 套圖-指定顏色.jsx"
+01:42:36 GMT+0800: "Finished 套圖-改變顏色.jsx"
+01:43:44 GMT+0800: "Finished 套圖-指定顏色.jsx"
+01:43:44 GMT+0800: "Finished 套圖-改變顏色.jsx"
+15:16:03 GMT+0800: "Finished 套圖-指定顏色.jsx"
+15:16:03 GMT+0800: "Finished 套圖-改變顏色.jsx"
