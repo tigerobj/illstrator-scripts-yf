@@ -1,1 +1,4 @@
-alert("這是一支測試程式", "測試程式");
+alert(
+    "\u9019\u662F\u4E00\u652F\u6E2C\u8A66\u7A0B\u5F0F",
+    "\u6E2C\u8A66\u7A0B\u5F0F"
+);
